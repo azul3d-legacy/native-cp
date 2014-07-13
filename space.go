@@ -580,84 +580,102 @@ type SpaceDebugDrawOptions struct {
 //export go_chipmunk_space_debug_draw_circle_impl
 func go_chipmunk_space_debug_draw_circle_impl(cpos C.cpVect, cangle, cradius C.cpFloat, coutlineColor, cfillColor C.cpSpaceDebugColor, data unsafe.Pointer) {
 	options := (*SpaceDebugDrawOptions)(data)
-	pos := *(*Vect)(unsafe.Pointer(&cpos))
-	angle := *(*float64)(unsafe.Pointer(&cangle))
-	radius := *(*float64)(unsafe.Pointer(&cradius))
-	outlineColor := *(*SpaceDebugColor)(unsafe.Pointer(&coutlineColor))
-	fillColor := *(*SpaceDebugColor)(unsafe.Pointer(&cfillColor))
-	options.DrawCircle(pos, angle, radius, outlineColor, fillColor, options.Data)
+	if options.DrawCircle != nil {
+		pos := *(*Vect)(unsafe.Pointer(&cpos))
+		angle := *(*float64)(unsafe.Pointer(&cangle))
+		radius := *(*float64)(unsafe.Pointer(&cradius))
+		outlineColor := *(*SpaceDebugColor)(unsafe.Pointer(&coutlineColor))
+		fillColor := *(*SpaceDebugColor)(unsafe.Pointer(&cfillColor))
+		options.DrawCircle(pos, angle, radius, outlineColor, fillColor, options.Data)
+	}
 }
 
 //export go_chipmunk_space_debug_draw_segment_impl
 func go_chipmunk_space_debug_draw_segment_impl(ca, cb C.cpVect, ccolor C.cpSpaceDebugColor, data unsafe.Pointer) {
 	options := (*SpaceDebugDrawOptions)(data)
-	a := *(*Vect)(unsafe.Pointer(&ca))
-	b := *(*Vect)(unsafe.Pointer(&cb))
-	color := *(*SpaceDebugColor)(unsafe.Pointer(&ccolor))
-	options.DrawSegment(a, b, color, options.Data)
+	if options.DrawSegment != nil {
+		a := *(*Vect)(unsafe.Pointer(&ca))
+		b := *(*Vect)(unsafe.Pointer(&cb))
+		color := *(*SpaceDebugColor)(unsafe.Pointer(&ccolor))
+		options.DrawSegment(a, b, color, options.Data)
+	}
 }
 
 //export go_chipmunk_space_debug_draw_fat_segment_impl
 func go_chipmunk_space_debug_draw_fat_segment_impl(ca, cb C.cpVect, cradius C.cpFloat, coutlineColor, cfillColor C.cpSpaceDebugColor, data unsafe.Pointer) {
 	options := (*SpaceDebugDrawOptions)(data)
-	a := *(*Vect)(unsafe.Pointer(&ca))
-	b := *(*Vect)(unsafe.Pointer(&cb))
-	radius := *(*float64)(unsafe.Pointer(&cradius))
-	outlineColor := *(*SpaceDebugColor)(unsafe.Pointer(&coutlineColor))
-	fillColor := *(*SpaceDebugColor)(unsafe.Pointer(&cfillColor))
-	options.DrawFatSegment(a, b, radius, outlineColor, fillColor, options.Data)
+	if options.DrawFatSegment != nil {
+		a := *(*Vect)(unsafe.Pointer(&ca))
+		b := *(*Vect)(unsafe.Pointer(&cb))
+		radius := *(*float64)(unsafe.Pointer(&cradius))
+		outlineColor := *(*SpaceDebugColor)(unsafe.Pointer(&coutlineColor))
+		fillColor := *(*SpaceDebugColor)(unsafe.Pointer(&cfillColor))
+		options.DrawFatSegment(a, b, radius, outlineColor, fillColor, options.Data)
+	}
 }
 
 //export go_chipmunk_space_debug_draw_polygon_impl
 func go_chipmunk_space_debug_draw_polygon_impl(ccount C.int, cverts *C.cpVect, cradius C.cpFloat, coutlineColor, cfillColor C.cpSpaceDebugColor, data unsafe.Pointer) {
 	options := (*SpaceDebugDrawOptions)(data)
+	if options.DrawPolygon != nil {
+		var verts []Vect
+		sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&verts))
+		sliceHeader.Len = int(ccount)
+		sliceHeader.Cap = int(ccount)
+		sliceHeader.Data = uintptr(unsafe.Pointer(cverts))
 
-	var verts []Vect
-	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&verts))
-	sliceHeader.Len = int(ccount)
-	sliceHeader.Cap = int(ccount)
-	sliceHeader.Data = uintptr(unsafe.Pointer(cverts))
+		radius := *(*float64)(unsafe.Pointer(&cradius))
+		outlineColor := *(*SpaceDebugColor)(unsafe.Pointer(&coutlineColor))
+		fillColor := *(*SpaceDebugColor)(unsafe.Pointer(&cfillColor))
 
-	radius := *(*float64)(unsafe.Pointer(&cradius))
-	outlineColor := *(*SpaceDebugColor)(unsafe.Pointer(&coutlineColor))
-	fillColor := *(*SpaceDebugColor)(unsafe.Pointer(&cfillColor))
-
-	options.DrawPolygon(verts, radius, outlineColor, fillColor, options.Data)
+		options.DrawPolygon(verts, radius, outlineColor, fillColor, options.Data)
+	}
 }
 
 //export go_chipmunk_space_debug_draw_dot_impl
 func go_chipmunk_space_debug_draw_dot_impl(csize C.cpFloat, cpos C.cpVect, ccolor C.cpSpaceDebugColor, data unsafe.Pointer) {
 	options := (*SpaceDebugDrawOptions)(data)
-	size := *(*float64)(unsafe.Pointer(&csize))
-	pos := *(*Vect)(unsafe.Pointer(&cpos))
-	color := *(*SpaceDebugColor)(unsafe.Pointer(&ccolor))
-	options.DrawDot(size, pos, color, options.Data)
+	if options.DrawDot != nil {
+		size := *(*float64)(unsafe.Pointer(&csize))
+		pos := *(*Vect)(unsafe.Pointer(&cpos))
+		color := *(*SpaceDebugColor)(unsafe.Pointer(&ccolor))
+		options.DrawDot(size, pos, color, options.Data)
+	}
 }
 
 //export go_chipmunk_space_debug_draw_color_for_shape_impl
 func go_chipmunk_space_debug_draw_color_for_shape_impl(cshape unsafe.Pointer, data unsafe.Pointer) C.cpSpaceDebugColor {
 	options := (*SpaceDebugDrawOptions)(data)
-	shape := (*Shape)(cshape)
-
-	ret := options.ColorForShape(shape, options.Data)
-	return *(*C.cpSpaceDebugColor)(unsafe.Pointer(&ret))
+	var color SpaceDebugColor
+	if options.ColorForShape != nil {
+		shape := (*Shape)(cshape)
+		color = options.ColorForShape(shape, options.Data)
+	}
+	return *(*C.cpSpaceDebugColor)(unsafe.Pointer(&color))
 }
 
+// DebugDraw draws the space using the debug draw options (which includes
+// callbacks for performing the actual drawing). All options fields are
+// entirely optional (callbacks may be nil, etc).
+//
+// options.Data is arbitrary user data fed into the callbacks (this is just for
+// a 1:1 mapping of chipmunks API, in Go you can just use a closure and access
+// the data itself not storing it inside options.Data).
 func (s *Space) DebugDraw(options *SpaceDebugDrawOptions) {
 	var dd C.cpSpaceDebugDrawOptions
-	dd.drawCircle = (C.cpSpaceDebugDrawCircleImpl)(unsafe.Pointer(&C.pre_go_chipmunk_space_debug_draw_circle_impl))
-	dd.drawSegment = (C.cpSpaceDebugDrawSegmentImpl)(unsafe.Pointer(&C.pre_go_chipmunk_space_debug_draw_segment_impl))
-	dd.drawFatSegment = (C.cpSpaceDebugDrawFatSegmentImpl)(unsafe.Pointer(&C.pre_go_chipmunk_space_debug_draw_fat_segment_impl))
-	dd.drawPolygon = (C.cpSpaceDebugDrawPolygonImpl)(unsafe.Pointer(&C.pre_go_chipmunk_space_debug_draw_polygon_impl))
-	dd.drawDot = (C.cpSpaceDebugDrawDotImpl)(unsafe.Pointer(&C.pre_go_chipmunk_space_debug_draw_dot_impl))
-	dd.colorForShape = (C.cpSpaceDebugDrawColorForShapeImpl)(unsafe.Pointer(&C.pre_go_chipmunk_space_debug_draw_color_for_shape_impl))
+	dd.drawCircle = (C.cpSpaceDebugDrawCircleImpl)(unsafe.Pointer(C.pre_go_chipmunk_space_debug_draw_circle_impl))
+	dd.drawSegment = (C.cpSpaceDebugDrawSegmentImpl)(unsafe.Pointer(C.pre_go_chipmunk_space_debug_draw_segment_impl))
+	dd.drawFatSegment = (C.cpSpaceDebugDrawFatSegmentImpl)(unsafe.Pointer(C.pre_go_chipmunk_space_debug_draw_fat_segment_impl))
+	dd.drawPolygon = (C.cpSpaceDebugDrawPolygonImpl)(unsafe.Pointer(C.pre_go_chipmunk_space_debug_draw_polygon_impl))
+	dd.drawDot = (C.cpSpaceDebugDrawDotImpl)(unsafe.Pointer(C.pre_go_chipmunk_space_debug_draw_dot_impl))
+	dd.colorForShape = (C.cpSpaceDebugDrawColorForShapeImpl)(unsafe.Pointer(C.pre_go_chipmunk_space_debug_draw_color_for_shape_impl))
 
 	dd.flags = C.cpSpaceDebugDrawFlags(options.Flags)
 	dd.shapeOutlineColor = *(*C.cpSpaceDebugColor)(unsafe.Pointer(&options.ShapeOutlineColor))
 	dd.constraintColor = *(*C.cpSpaceDebugColor)(unsafe.Pointer(&options.ConstraintColor))
 	dd.collisionPointColor = *(*C.cpSpaceDebugColor)(unsafe.Pointer(&options.CollisionPointColor))
 
-	dd.data = C.cpDataPointer(unsafe.Pointer(&options))
+	dd.data = C.cpDataPointer(unsafe.Pointer(options))
 
 	C.cpSpaceDebugDraw(s.c, &dd)
 }
