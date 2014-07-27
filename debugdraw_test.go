@@ -14,7 +14,7 @@ func TestDebugDrawNil(t *testing.T) {
 	// Fill in debugDraw parameters as desired, in this case we don't fill in
 	// any.
 	debugDraw := new(SpaceDebugDrawOptions)
-	debugDraw.Flags = SPACE_DEBUG_DRAW_SHAPES|SPACE_DEBUG_DRAW_CONSTRAINTS|SPACE_DEBUG_DRAW_COLLISION_POINTS
+	debugDraw.Flags = SPACE_DEBUG_DRAW_SHAPES | SPACE_DEBUG_DRAW_CONSTRAINTS | SPACE_DEBUG_DRAW_COLLISION_POINTS
 	space.DebugDraw(debugDraw)
 }
 
@@ -26,7 +26,7 @@ func TestDebugDraw(t *testing.T) {
 	space.AddShape(body.CircleShapeNew(32, V(0, 0)))
 
 	debugDraw := new(SpaceDebugDrawOptions)
-	debugDraw.Flags = SPACE_DEBUG_DRAW_SHAPES|SPACE_DEBUG_DRAW_CONSTRAINTS|SPACE_DEBUG_DRAW_COLLISION_POINTS
+	debugDraw.Flags = SPACE_DEBUG_DRAW_SHAPES | SPACE_DEBUG_DRAW_CONSTRAINTS | SPACE_DEBUG_DRAW_COLLISION_POINTS
 
 	// Simply fed into each callback below. No need to use it, could just use
 	// closures like we do below and access data directly instead of using the
