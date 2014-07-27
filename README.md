@@ -1,7 +1,5 @@
-Go wrappers to the Chipmunk 2D physics library (https://chipmunk-physics.net/).
+Azul3D native/cp package.
 
-To install:
+See documentation online:
+  http://www.azul3d.org/packages.html
 
-```
-go get gopkg.in/slimsag/cp.v1
-```
