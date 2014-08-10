@@ -10,8 +10,6 @@ package cp
 */
 import "C"
 
-import "unsafe"
-
 // Hash value type.
 type HashValue C.cpHashValue
 
