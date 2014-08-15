@@ -30,11 +30,14 @@
    #include "TargetConditionals.h"
 #endif
 
-#if ((TARGET_OS_IPHONE == 1) || (TARGET_OS_MAC == 1)) && (!defined CP_USE_CGTYPES)
+// Use CGTypes by default on iOS and Mac.
+// Also enables usage of doubles on 64 bit.
+// Performance is usually very comparable when the CPU cache is well utilised.
+#if (TARGET_OS_IPHONE || TARGET_OS_MAC) && (!defined CP_USE_CGTYPES)
 	#define CP_USE_CGTYPES 1
 #endif
 
-#if CP_USE_CGTYPES == 1
+#if CP_USE_CGTYPES
 	#if TARGET_OS_IPHONE
 		#import <CoreGraphics/CGGeometry.h>
 		#import <CoreGraphics/CGAffineTransform.h>
@@ -50,7 +53,7 @@
 #endif
 
 #ifndef CP_USE_DOUBLES
-	// use doubles by default for higher precision
+	// Use doubles by default for higher precision.
 	#define CP_USE_DOUBLES 1
 #endif
 
@@ -162,7 +165,11 @@ static inline cpFloat cpflerpconst(cpFloat f1, cpFloat f2, cpFloat d)
 }
 
 /// Hash value type.
-typedef uintptr_t cpHashValue;
+#ifdef CP_HASH_VALUE_TYPE
+	typedef CP_HASH_VALUE_TYPE cpHashValue;
+#else
+	typedef uintptr_t cpHashValue;
+#endif
 
 /// Type used internally to cache colliding object info for cpCollideShapes().
 /// Should be at least 32 bits.

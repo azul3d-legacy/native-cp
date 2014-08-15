@@ -174,13 +174,13 @@ func (a *Arbiter) GetNormal() Vect {
 
 // Get the position of the  ith contact point on the surface of the first shape.
 func (a *Arbiter) Point1(i int) Vect {
-	ret := C.cpArbiterGetPoint1(a.c, C.int(i))
+	ret := C.cpArbiterGetPointA(a.c, C.int(i))
 	return *(*Vect)(unsafe.Pointer(&ret))
 }
 
 // Get the position of the  ith contact point on the surface of the second shape.
 func (a *Arbiter) Point2(i int) Vect {
-	ret := C.cpArbiterGetPoint2(a.c, C.int(i))
+	ret := C.cpArbiterGetPointB(a.c, C.int(i))
 	return *(*Vect)(unsafe.Pointer(&ret))
 }
 

@@ -172,7 +172,7 @@ func TransformAxialScale(axis, pivot Vect, scale float64) Transform {
 	ret := C.cpTransformAxialScale(
 		*(*C.cpVect)(unsafe.Pointer(&axis)),
 		*(*C.cpVect)(unsafe.Pointer(&pivot)),
-		C.float(scale),
+		C.cpFloat(scale),
 	)
 	return *(*Transform)(unsafe.Pointer(&ret))
 }

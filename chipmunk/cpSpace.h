@@ -39,7 +39,7 @@ typedef void (*cpCollisionPostSolveFunc)(cpArbiter *arb, cpSpace *space, cpDataP
 /// Collision separate event function callback type.
 typedef void (*cpCollisionSeparateFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData);
 
-struct cpCollisionHandlerm {
+struct cpCollisionHandler {
 	cpCollisionType typeA, typeB;
 	cpCollisionBeginFunc beginFunc;
 	cpCollisionPreSolveFunc preSolveFunc;

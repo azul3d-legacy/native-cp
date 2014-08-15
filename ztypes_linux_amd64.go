@@ -1,5 +1,5 @@
 // Created by cgo -godefs - DO NOT EDIT
-// cgo -godefs types_cgodefs.go
+// cgo -godefs ztypes.go
 
 package cp
 
@@ -20,36 +20,36 @@ type Bitmask uint32
 type Timestamp uint32
 
 type Vect struct {
-	X float64
-	Y float64
+	X	float64
+	Y	float64
 }
 
 type Transform struct {
-	A  float64
-	B  float64
-	C  float64
-	D  float64
-	Tx float64
-	Ty float64
+	A	float64
+	B	float64
+	C	float64
+	D	float64
+	Tx	float64
+	Ty	float64
 }
 
 type Mat2x2 struct {
-	A float64
-	B float64
-	C float64
-	D float64
+	A	float64
+	B	float64
+	C	float64
+	D	float64
 }
 
 type BB struct {
-	L float64
-	B float64
-	R float64
-	T float64
+	L	float64
+	B	float64
+	R	float64
+	T	float64
 }
 
 type SpaceDebugColor struct {
-	R float32
-	G float32
-	B float32
-	A float32
+	R	float32
+	G	float32
+	B	float32
+	A	float32
 }

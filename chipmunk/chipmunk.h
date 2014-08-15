@@ -29,6 +29,13 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef WIN32
+	// For alloca().
+	#include <malloc.h>
+#else
+	#include <alloca.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -54,12 +61,11 @@ void cpMessage(const char *condition, const char *file, int line, int isError, i
 #ifdef NDEBUG
 	#define	cpAssertSoft(__condition__, ...)
 #else
-	#define cpAssertSoft(__condition__, ...) if(!(__condition__)) cpMessage(#__condition__, __FILE__, __LINE__, 1, 0, __VA_ARGS__)
+	#define cpAssertSoft(__condition__, ...) if(!(__condition__)){cpMessage(#__condition__, __FILE__, __LINE__, 1, 0, __VA_ARGS__), abort();}
 #endif
 
-// Hard assertions are important and cheap to execute. They are not disabled by compiling as debug.
-#define cpAssertHard(__condition__, ...) if(!(__condition__)) cpMessage(#__condition__, __FILE__, __LINE__, 1, 1, __VA_ARGS__)
-
+// Hard assertions are used in situations where the program definitely will crash anyway, and the reason is inexpensive to detect.
+#define cpAssertHard(__condition__, ...) if(!(__condition__)){cpMessage(#__condition__, __FILE__, __LINE__, 1, 1, __VA_ARGS__); abort();}
 
 #include "chipmunk_types.h"
 	
@@ -108,8 +114,7 @@ typedef struct cpRatchetJoint cpRatchetJoint;
 typedef struct cpGearJoint cpGearJoint;
 typedef struct cpSimpleMotorJoint cpSimpleMotorJoint;
 
-typedef struct cpCollisionHandlerm cpCollisionHandler;
-
+typedef struct cpCollisionHandler cpCollisionHandler;
 typedef struct cpContactPointSet cpContactPointSet;
 typedef struct cpArbiter cpArbiter;
 
@@ -120,11 +125,12 @@ typedef struct cpSpace cpSpace;
 #include "cpTransform.h"
 #include "cpSpatialIndex.h"
 
+#include "cpArbiter.h"	
+
 #include "cpBody.h"
 #include "cpShape.h"
 #include "cpPolyShape.h"
 
-#include "cpArbiter.h"	
 #include "cpConstraint.h"
 
 #include "cpSpace.h"
