@@ -54,6 +54,6 @@ void pre_go_chipmunk_space_debug_draw_dot_impl(cpFloat size, cpVect pos, cpSpace
 }
 
 cpSpaceDebugColor pre_go_chipmunk_space_debug_draw_color_for_shape_impl(cpShape *shape, cpDataPointer *data) {
-	go_chipmunk_space_debug_draw_color_for_shape_impl(shape, data);
+	return go_chipmunk_space_debug_draw_color_for_shape_impl(shape, data);
 }
 
