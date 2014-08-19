@@ -19,7 +19,7 @@ package cp
 
 /*
 #cgo LDFLAGS: -lm
-#cgo CFLAGS: -std=c99 -Isrc/
+#cgo CFLAGS: -std=c99 -Isrc/ -DNDEBUG
 
 #include "chipmunk/chipmunk.h"
 */
