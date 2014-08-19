@@ -145,7 +145,7 @@ func (c *Constraint) SetPreSolveFunc(f func(*Constraint, *Space)) {
 	c.preSolveFunc = f
 	C.cpConstraintSetPreSolveFunc(
 		c.c,
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_constraint_pre_solve_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_constraint_pre_solve_func)),
 	)
 }
 
@@ -159,6 +159,6 @@ func (c *Constraint) SetPostSolveFunc(f func(*Constraint, *Space)) {
 	c.postSolveFunc = f
 	C.cpConstraintSetPostSolveFunc(
 		c.c,
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_constraint_post_solve_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_constraint_post_solve_func)),
 	)
 }

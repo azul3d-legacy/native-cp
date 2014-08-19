@@ -350,7 +350,7 @@ func (s *Space) PointQuery(point Vect, maxDistance float64, filter ShapeFilter, 
 		*(*C.cpVect)(unsafe.Pointer(&point)),
 		C.cpFloat(maxDistance),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_space_point_query_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_point_query_func)),
 		unsafe.Pointer(pair),
 	)
 }
@@ -396,7 +396,7 @@ func (s *Space) SegmentQuery(start, end Vect, radius float64, filter ShapeFilter
 		*(*C.cpVect)(unsafe.Pointer(&end)),
 		C.cpFloat(radius),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_space_segment_query_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_segment_query_func)),
 		unsafe.Pointer(pair),
 	)
 }
@@ -439,7 +439,7 @@ func (s *Space) BBQuery(bb BB, filter ShapeFilter, f SpaceBBQueryFunc, data inte
 		s.c,
 		*(*C.cpBB)(unsafe.Pointer(&bb)),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_space_bb_query_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_bb_query_func)),
 		unsafe.Pointer(pair),
 	)
 }
@@ -466,7 +466,7 @@ func (s *Space) ShapeQuery(shape *Shape, f SpaceShapeQueryFunc, data interface{}
 	return goBool(C.cpSpaceShapeQuery(
 		s.c,
 		shape.c,
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_space_shape_query_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_shape_query_func)),
 		unsafe.Pointer(pair),
 	))
 }
@@ -482,7 +482,7 @@ func go_chipmunk_space_body_iterator_func(cbody, data unsafe.Pointer) {
 func (s *Space) EachBody(space *Space, f func(b *Body)) {
 	C.cpSpaceEachBody(
 		s.c,
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_space_body_iterator_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_body_iterator_func)),
 		unsafe.Pointer(&f),
 	)
 }
@@ -498,7 +498,7 @@ func go_chipmunk_space_shape_iterator_func(cshape, data unsafe.Pointer) {
 func (s *Space) EachShape(space *Space, f func(s *Shape)) {
 	C.cpSpaceEachShape(
 		s.c,
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_space_shape_iterator_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_shape_iterator_func)),
 		unsafe.Pointer(&f),
 	)
 }
@@ -514,7 +514,7 @@ func go_chipmunk_space_constraint_iterator_func(cconstraint, data unsafe.Pointer
 func (s *Space) EachConstraint(space *Space, f func(c *Constraint)) {
 	C.cpSpaceEachConstraint(
 		s.c,
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_space_constraint_iterator_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_constraint_iterator_func)),
 		unsafe.Pointer(&f),
 	)
 }

@@ -101,7 +101,7 @@ func (c *Constraint) DampedSpringSetForceFunc(f func(spring *Constraint, dist fl
 	c.dampedSpringForceFunc = f
 	C.cpDampedSpringSetSpringForceFunc(
 		c.c,
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_damped_spring_force_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_damped_spring_force_func)),
 	)
 }
 

@@ -308,7 +308,7 @@ func (b *Body) SetVelocityUpdateFunc(f BodyVelocityFunc) {
 	if old == nil {
 		C.cpBodySetVelocityUpdateFunc(
 			b.c,
-			(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_body_velocity_func)),
+			(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_body_velocity_func)),
 		)
 	}
 }
@@ -322,7 +322,7 @@ func (b *Body) SetPositionUpdateFunc(f BodyPositionFunc) {
 	if old == nil {
 		C.cpBodySetPositionUpdateFunc(
 			b.c,
-			(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_body_position_func)),
+			(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_body_position_func)),
 		)
 	}
 }

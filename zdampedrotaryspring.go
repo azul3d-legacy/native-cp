@@ -71,7 +71,7 @@ func (c *Constraint) DampedRotarySpringSetTorqueFunc(f func(spring *Constraint, 
 	c.dampedRotarySpringTorqueFunc = f
 	C.cpDampedRotarySpringSetSpringTorqueFunc(
 		c.c,
-		(*[0]byte)(unsafe.Pointer(&C.pre_go_chipmunk_rotary_spring_torque_func)),
+		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_rotary_spring_torque_func)),
 	)
 }
 
