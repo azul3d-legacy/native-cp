@@ -22,6 +22,10 @@ extern void pre_go_chipmunk_space_debug_draw_polygon_impl(int count, const cpVec
 extern void pre_go_chipmunk_space_debug_draw_dot_impl(cpFloat size, cpVect pos, cpSpaceDebugColor color, cpDataPointer *data);
 extern cpSpaceDebugColor pre_go_chipmunk_space_debug_draw_color_for_shape_impl(cpShape *shape, cpDataPointer *data);
 
+extern cpBool pre_go_chipmunk_collision_begin_func(cpArbiter *arb, cpSpace *space, cpDataPointer userData);
+extern cpBool pre_go_chipmunk_collision_pre_solve_func(cpArbiter *arb, cpSpace *space, cpDataPointer userData);
+extern void pre_go_chipmunk_collision_post_solve_func(cpArbiter *arb, cpSpace *space, cpDataPointer userData);
+extern void pre_go_chipmunk_collision_separate_func(cpArbiter *arb, cpSpace *space, cpDataPointer userData);
 */
 import "C"
 
@@ -57,8 +61,8 @@ type (
 		BeginFunc     CollisionBeginFunc
 		PreSolveFunc  CollisionPreSolveFunc
 		PostSolveFunc CollisionPostSolveFunc
-		SeperateFunc  CollisionSeparateFunc
-		userData      interface{}
+		SeparateFunc  CollisionSeparateFunc
+		UserData      interface{}
 	}
 )
 
@@ -301,27 +305,93 @@ func (s *Space) Step(dt float64) {
 
 func (s *Space) AddDefaultCollisionHandler() {
 	C.cpSpaceAddDefaultCollisionHandler(s.c)
-	// FIXME: what to do with return?
-	// cpCollisionHandler *cpSpaceAddDefaultCollisionHandler(cpSpace *space);
 }
 
-func (s *Space) AddCollisionHandler(a, b CollisionType) {
-	C.cpSpaceAddCollisionHandler(
+//export pre_go_chipmunk_collision_begin_func
+func pre_go_chipmunk_collision_begin_func(arb *C.cpArbiter, space *C.cpSpace, userData C.cpDataPointer) C.cpBool {
+	handler := (*CollisionHandler)(unsafe.Pointer(userData))
+	if handler != nil && handler.BeginFunc != nil {
+		if handler.BeginFunc(
+			goArbiter(arb),
+			goSpace(space),
+			handler.UserData,
+		) {
+			return C.cpBool(1)
+		} else {
+			return C.cpBool(0)
+		}
+	}
+	return C.cpBool(1)
+}
+
+//export pre_go_chipmunk_collision_pre_solve_func
+func pre_go_chipmunk_collision_pre_solve_func(arb *C.cpArbiter, space *C.cpSpace, userData C.cpDataPointer) C.cpBool {
+	handler := (*CollisionHandler)(unsafe.Pointer(userData))
+	if handler != nil && handler.PreSolveFunc != nil {
+		if handler.PreSolveFunc(
+			goArbiter(arb),
+			goSpace(space),
+			handler.UserData,
+		) {
+			return C.cpBool(1)
+		} else {
+			return C.cpBool(0)
+		}
+	}
+	return C.cpBool(1)
+}
+
+//export pre_go_chipmunk_collision_post_solve_func
+func pre_go_chipmunk_collision_post_solve_func(arb *C.cpArbiter, space *C.cpSpace, userData C.cpDataPointer) {
+	handler := (*CollisionHandler)(unsafe.Pointer(userData))
+	if handler != nil && handler.PostSolveFunc != nil {
+		handler.PostSolveFunc(
+			goArbiter(arb),
+			goSpace(space),
+			handler.UserData,
+		)
+	}
+}
+
+//export pre_go_chipmunk_collision_separate_func
+func pre_go_chipmunk_collision_separate_func(arb *C.cpArbiter, space *C.cpSpace, userData C.cpDataPointer) {
+	handler := (*CollisionHandler)(unsafe.Pointer(userData))
+	if handler != nil && handler.SeparateFunc != nil {
+		handler.SeparateFunc(
+			goArbiter(arb),
+			goSpace(space),
+			handler.UserData,
+		)
+	}
+}
+
+func (s *Space) AddCollisionHandler(a, b CollisionType, handler *CollisionHandler) {
+	cHandler := C.cpSpaceAddCollisionHandler(
 		s.c,
 		C.cpCollisionType(a),
 		C.cpCollisionType(b),
 	)
-	// FIXME: what to do with return?
-	// cpCollisionHandler *cpSpaceAddCollisionHandler(cpSpace *space, cpCollisionType a, cpCollisionType b);
+	cHandler.beginFunc = (C.cpCollisionBeginFunc)(C.pre_go_chipmunk_collision_begin_func)
+	cHandler.preSolveFunc = (C.cpCollisionPreSolveFunc)(C.pre_go_chipmunk_collision_pre_solve_func)
+	cHandler.postSolveFunc = (C.cpCollisionPostSolveFunc)(C.pre_go_chipmunk_collision_post_solve_func)
+	cHandler.separateFunc = (C.cpCollisionSeparateFunc)(C.pre_go_chipmunk_collision_separate_func)
+	if handler != nil {
+		cHandler.userData = (C.cpDataPointer)(unsafe.Pointer(&handler))
+	}
 }
 
-func (s *Space) AddWildcardHandler(t CollisionType) {
-	C.cpSpaceAddWildcardHandler(
+func (s *Space) AddWildcardHandler(t CollisionType, handler *CollisionHandler) {
+	cHandler := C.cpSpaceAddWildcardHandler(
 		s.c,
 		C.cpCollisionType(t),
 	)
-	// FIXME: what to do with return?
-	// cpCollisionHandler *cpSpaceAddWildcardHandler(cpSpace *space, cpCollisionType type);
+	cHandler.beginFunc = (C.cpCollisionBeginFunc)(C.pre_go_chipmunk_collision_begin_func)
+	cHandler.preSolveFunc = (C.cpCollisionPreSolveFunc)(C.pre_go_chipmunk_collision_pre_solve_func)
+	cHandler.postSolveFunc = (C.cpCollisionPostSolveFunc)(C.pre_go_chipmunk_collision_post_solve_func)
+	cHandler.separateFunc = (C.cpCollisionSeparateFunc)(C.pre_go_chipmunk_collision_separate_func)
+	if handler != nil {
+		cHandler.userData = (C.cpDataPointer)(unsafe.Pointer(&handler))
+	}
 }
 
 // Nearest point query callback function type.
