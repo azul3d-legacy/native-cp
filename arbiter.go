@@ -28,8 +28,9 @@ type Arbiter struct {
 }
 
 func goArbiter(c *C.cpArbiter) *Arbiter {
-	ptr := C.cpArbiterGetUserData(c)
-	return (*Arbiter)(ptr)
+	return &Arbiter{
+		c: c,
+	}
 }
 
 func (a *Arbiter) Restitution() float64 {
