@@ -10,6 +10,7 @@ package cp
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -30,6 +31,7 @@ func SimpleMotorNew(a, b *Body, rate float64) *Constraint {
 		return nil
 	}
 	C.cpConstraintSetUserData(c.c, C.cpDataPointer(unsafe.Pointer(c)))
+	runtime.SetFinalizer(c, finalizeConstraint)
 	return c
 }
 

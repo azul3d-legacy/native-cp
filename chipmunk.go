@@ -7,10 +7,6 @@
 // More information about Chipmunk can be found at:
 //  http://chipmunk-physics.net/
 //
-// This package does not attempt to hide the manual memory management of the C
-// library, as such you must pay attention as you would if you where using the
-// C library itself.
-//
 // This package uses the Chipmunk library, and as such it is also bound by it's
 // license which can be found at:
 //  https://github.com/slembcke/Chipmunk2D/blob/master/LICENSE.txt

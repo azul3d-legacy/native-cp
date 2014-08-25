@@ -10,6 +10,7 @@ package cp
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -32,6 +33,7 @@ func GrooveJointNew(a, b *Body, grooveA, grooveB, anchorB Vect) *Constraint {
 		return nil
 	}
 	C.cpConstraintSetUserData(c.c, C.cpDataPointer(unsafe.Pointer(c)))
+	runtime.SetFinalizer(c, finalizeConstraint)
 	return c
 }
 

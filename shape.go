@@ -10,6 +10,7 @@ package cp
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -87,6 +88,7 @@ func (b *Body) CircleShapeNew(radius float64, offset Vect) *Shape {
 		return nil
 	}
 	C.cpShapeSetUserData(s.c, C.cpDataPointer(unsafe.Pointer(s)))
+	runtime.SetFinalizer(s, finalizeShape)
 	return s
 }
 
@@ -103,14 +105,19 @@ func (bd *Body) SegmentShapeNew(a, b Vect, radius float64) *Shape {
 		return nil
 	}
 	C.cpShapeSetUserData(s.c, C.cpDataPointer(unsafe.Pointer(s)))
+	runtime.SetFinalizer(s, finalizeShape)
 	return s
 }
 
-// Free's this Shape.
-//
-// It is required you use this, otherwise you are leaking memory.
+func finalizeShape(s *Shape) {
+	if s.c != nil {
+		s.c = nil
+		C.cpShapeFree(s.c)
+	}
+}
+
+// Free is deprecated. Do not use it, it is no-op.
 func (s *Shape) Free() {
-	C.cpShapeFree(s.c)
 }
 
 // Update, cache and return the bounding box of a shape based on the body it's

@@ -10,6 +10,7 @@ package cp
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -33,6 +34,7 @@ func SlideJointNew(a, b *Body, anchorA, anchorB Vect, min, max float64) *Constra
 		return nil
 	}
 	C.cpConstraintSetUserData(c.c, C.cpDataPointer(unsafe.Pointer(c)))
+	runtime.SetFinalizer(c, finalizeConstraint)
 	return c
 }
 

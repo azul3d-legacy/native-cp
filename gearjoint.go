@@ -10,6 +10,7 @@ package cp
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -31,6 +32,7 @@ func GearJointNew(a, b *Body, phase, ratio float64) *Constraint {
 		return nil
 	}
 	C.cpConstraintSetUserData(c.c, C.cpDataPointer(unsafe.Pointer(c)))
+	runtime.SetFinalizer(c, finalizeConstraint)
 	return c
 }
 

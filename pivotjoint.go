@@ -10,6 +10,7 @@ package cp
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -30,6 +31,7 @@ func PivotJointNew(a, b *Body, pivot Vect) *Constraint {
 		return nil
 	}
 	C.cpConstraintSetUserData(c.c, C.cpDataPointer(unsafe.Pointer(c)))
+	runtime.SetFinalizer(c, finalizeConstraint)
 	return c
 }
 
@@ -46,6 +48,7 @@ func PivotJointNew2(a, b *Body, anchorA, anchorB Vect) *Constraint {
 		return nil
 	}
 	C.cpConstraintSetUserData(c.c, C.cpDataPointer(unsafe.Pointer(c)))
+	runtime.SetFinalizer(c, finalizeConstraint)
 	return c
 }
 

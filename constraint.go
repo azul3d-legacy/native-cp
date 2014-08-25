@@ -29,11 +29,15 @@ func goConstraint(c *C.cpConstraint) *Constraint {
 	return (*Constraint)(data)
 }
 
-// Free's this Constraint.
-//
-// It is required you use this, otherwise you are leaking memory.
+func finalizeConstraint(c *Constraint) {
+	if c.c != nil {
+		c.c = nil
+		C.cpConstraintFree(c.c)
+	}
+}
+
+// Free is deprecated. Do not use it, it is no-op.
 func (c *Constraint) Free() {
-	C.cpConstraintFree(c.c)
 }
 
 // Get the Space this constraint is added to.

@@ -11,6 +11,7 @@ extern void pre_go_chipmunk_damped_spring_force_func(struct cpConstraint *spring
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -35,6 +36,7 @@ func DampedSpringNew(a, b *Body, anchorA, anchorB Vect, restLength, stiffness, d
 		return nil
 	}
 	C.cpConstraintSetUserData(c.c, C.cpDataPointer(unsafe.Pointer(c)))
+	runtime.SetFinalizer(c, finalizeConstraint)
 	return c
 }
 

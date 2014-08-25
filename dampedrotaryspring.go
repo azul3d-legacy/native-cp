@@ -11,6 +11,7 @@ extern void pre_go_chipmunk_rotary_spring_torque_func(struct cpConstraint *sprin
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -33,6 +34,7 @@ func DampedRotarySpringNew(a, b *Body, restAngle, stiffness, damping float64) *C
 		return nil
 	}
 	C.cpConstraintSetUserData(c.c, C.cpDataPointer(unsafe.Pointer(c)))
+	runtime.SetFinalizer(c, finalizeConstraint)
 	return c
 }
 

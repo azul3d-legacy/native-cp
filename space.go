@@ -30,6 +30,7 @@ extern void pre_go_chipmunk_collision_separate_func(cpArbiter *arb, cpSpace *spa
 import "C"
 
 import (
+	"runtime"
 	"reflect"
 	"unsafe"
 )
@@ -85,14 +86,19 @@ func SpaceNew() *Space {
 		return nil
 	}
 	C.cpSpaceSetUserData(s.c, C.cpDataPointer(unsafe.Pointer(s)))
+	runtime.SetFinalizer(s, finalizeSpace)
 	return s
 }
 
-// Free's this Body.
-//
-// It is required you use this, otherwise you are leaking memory.
+func finalizeSpace(s *Space) {
+	if s.c != nil {
+		s.c = nil
+		C.cpSpaceFree(s.c)
+	}
+}
+
+// Free is deprecated. Do not use it, it is no-op.
 func (s *Space) Free() {
-	C.cpSpaceFree(s.c)
 }
 
 // Number of iterations to use in the impulse solver to solve contacts and

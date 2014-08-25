@@ -16,6 +16,7 @@ extern void pre_go_chipmunk_body_each_arbiter(cpBody *body, cpArbiter *arbiter, 
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
 
@@ -81,6 +82,7 @@ func BodyNew(mass, moment float64) *Body {
 		return nil
 	}
 	C.cpBodySetUserData(b.c, C.cpDataPointer(unsafe.Pointer(b)))
+	runtime.SetFinalizer(b, finalizeBody)
 	return b
 }
 
@@ -92,6 +94,7 @@ func BodyNewKinematic() *Body {
 		return nil
 	}
 	C.cpBodySetUserData(b.c, C.cpDataPointer(unsafe.Pointer(b)))
+	runtime.SetFinalizer(b, finalizeBody)
 	return b
 }
 
@@ -103,14 +106,19 @@ func BodyNewStatic() *Body {
 		return nil
 	}
 	C.cpBodySetUserData(b.c, C.cpDataPointer(unsafe.Pointer(b)))
+	runtime.SetFinalizer(b, finalizeBody)
 	return b
 }
 
-// Free's this Body.
-//
-// It is required you use this, otherwise you are leaking memory.
+func finalizeBody(b *Body) {
+	if b.c != nil {
+		b.c = nil
+		C.cpBodyFree(b.c)
+	}
+}
+
+// Free is deprecated. Do not use it, it is no-op.
 func (b *Body) Free() {
-	C.cpBodyFree(b.c)
 }
 
 // Wake up a sleeping or idle body.
