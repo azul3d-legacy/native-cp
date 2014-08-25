@@ -30,8 +30,8 @@ extern void pre_go_chipmunk_collision_separate_func(cpArbiter *arb, cpSpace *spa
 import "C"
 
 import (
-	"runtime"
 	"reflect"
+	"runtime"
 	"unsafe"
 )
 
