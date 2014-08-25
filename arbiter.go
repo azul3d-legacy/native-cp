@@ -22,8 +22,9 @@ const (
 // They are also used in conjuction with collision handler callbacks allowing
 // you to retrieve information on the collision and control it.
 type Arbiter struct {
-	c        *C.cpArbiter
-	userData interface{}
+	c               *C.cpArbiter
+	contactPointSet *ContactPointSet
+	userData        interface{}
 }
 
 func goArbiter(c *C.cpArbiter) *Arbiter {
@@ -136,15 +137,16 @@ type ContactPointSet struct {
 }
 
 // Return a contact set from an arbiter.
-func (a *Arbiter) ContactPointSet() ContactPointSet {
+func (a *Arbiter) ContactPointSet() *ContactPointSet {
 	ret := C.cpArbiterGetContactPointSet(a.c)
-	return *(*ContactPointSet)(unsafe.Pointer(&ret))
+	return (*ContactPointSet)(unsafe.Pointer(&ret))
 }
 
 // Replace the contact point set for an arbiter.
 //
 // This can be a very powerful feature, but use it with caution!
 func (a *Arbiter) SetContactPointSet(set *ContactPointSet) {
+	a.contactPointSet = set
 	C.cpArbiterSetContactPointSet(
 		a.c,
 		(*C.cpContactPointSet)(unsafe.Pointer(set)),
