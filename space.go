@@ -382,7 +382,7 @@ func (s *Space) AddCollisionHandler(a, b CollisionType, handler *CollisionHandle
 	cHandler.postSolveFunc = (C.cpCollisionPostSolveFunc)(C.pre_go_chipmunk_collision_post_solve_func)
 	cHandler.separateFunc = (C.cpCollisionSeparateFunc)(C.pre_go_chipmunk_collision_separate_func)
 	if handler != nil {
-		cHandler.userData = (C.cpDataPointer)(unsafe.Pointer(&handler))
+		cHandler.userData = (C.cpDataPointer)(unsafe.Pointer(handler))
 	}
 }
 
@@ -396,7 +396,7 @@ func (s *Space) AddWildcardHandler(t CollisionType, handler *CollisionHandler) {
 	cHandler.postSolveFunc = (C.cpCollisionPostSolveFunc)(C.pre_go_chipmunk_collision_post_solve_func)
 	cHandler.separateFunc = (C.cpCollisionSeparateFunc)(C.pre_go_chipmunk_collision_separate_func)
 	if handler != nil {
-		cHandler.userData = (C.cpDataPointer)(unsafe.Pointer(&handler))
+		cHandler.userData = (C.cpDataPointer)(unsafe.Pointer(handler))
 	}
 }
 
