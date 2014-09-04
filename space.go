@@ -71,6 +71,7 @@ type Space struct {
 	c                 *C.cpSpace
 	userData          interface{}
 	postStepCallbacks []func()
+	refs              map[interface{}]struct{}
 }
 
 func goSpace(c *C.cpSpace) *Space {
@@ -80,8 +81,10 @@ func goSpace(c *C.cpSpace) *Space {
 
 // Allocate and initialize a cpSpace.
 func SpaceNew() *Space {
-	s := new(Space)
-	s.c = C.cpSpaceNew()
+	s := &Space{
+		refs: make(map[interface{}]struct{}, 64),
+		c:    C.cpSpaceNew(),
+	}
 	if s.c == nil {
 		return nil
 	}
@@ -216,7 +219,7 @@ func (s *Space) SetUserData(i interface{}) {
 // This is merely provided for convenience and you are not required to use it.
 func (s *Space) StaticBody() *Body {
 	c := C.cpSpaceGetStaticBody(s.c)
-	if b.c == nil {
+	if c == nil {
 		return nil
 	}
 	b := goBody(c, s)
@@ -239,31 +242,37 @@ func (s *Space) IsLocked() bool {
 //
 // If the shape is attached to a static body, it will be added as a static shape.
 func (s *Space) AddShape(shape *Shape) *Shape {
+	s.refs[shape] = struct{}{}
 	return goShape(C.cpSpaceAddShape(s.c, shape.c), s)
 }
 
 // Add a rigid body to the simulation.
 func (s *Space) AddBody(body *Body) *Body {
+	s.refs[body] = struct{}{}
 	return goBody(C.cpSpaceAddBody(s.c, body.c), s)
 }
 
 // Add a constraint to the simulation.
 func (s *Space) AddConstraint(constraint *Constraint) *Constraint {
+	s.refs[constraint] = struct{}{}
 	return goConstraint(C.cpSpaceAddConstraint(s.c, constraint.c), s)
 }
 
 // Remove a collision shape from the simulation.
 func (s *Space) RemoveShape(shape *Shape) {
+	delete(s.refs, shape)
 	C.cpSpaceRemoveShape(s.c, shape.c)
 }
 
 // Remove a rigid body from the simulation.
 func (s *Space) RemoveBody(body *Body) {
+	delete(s.refs, body)
 	C.cpSpaceRemoveBody(s.c, body.c)
 }
 
 // Remove a constraint from the simulation.
 func (s *Space) RemoveConstraint(constraint *Constraint) {
+	delete(s.refs, constraint)
 	C.cpSpaceRemoveConstraint(s.c, constraint.c)
 }
 
@@ -359,6 +368,7 @@ func pre_go_chipmunk_collision_separate_func(arb *C.cpArbiter, space *C.cpSpace,
 }
 
 func (s *Space) AddCollisionHandler(a, b CollisionType, handler *CollisionHandler) {
+	s.refs[handler] = struct{}{}
 	cHandler := C.cpSpaceAddCollisionHandler(
 		s.c,
 		C.cpCollisionType(a),
@@ -374,6 +384,7 @@ func (s *Space) AddCollisionHandler(a, b CollisionType, handler *CollisionHandle
 }
 
 func (s *Space) AddWildcardHandler(t CollisionType, handler *CollisionHandler) {
+	s.refs[handler] = struct{}{}
 	cHandler := C.cpSpaceAddWildcardHandler(
 		s.c,
 		C.cpCollisionType(t),
@@ -558,11 +569,16 @@ func (s *Space) EachBody(space *Space, f func(b *Body)) {
 	)
 }
 
+type spaceShapeIterData struct {
+	cb func(s *Shape)
+	*Space
+}
+
 //export go_chipmunk_space_shape_iterator_func
-func go_chipmunk_space_shape_iterator_func(cshape, data unsafe.Pointer) {
-	shape := goShape((*C.cpShape)(cshape), nil)
-	f := *(*func(*Shape))(data)
-	f(shape)
+func go_chipmunk_space_shape_iterator_func(cshape, cdata unsafe.Pointer) {
+	data := (*spaceShapeIterData)(cdata)
+	shape := goShape((*C.cpShape)(cshape), data.Space)
+	data.cb(shape)
 }
 
 // Call f for each shape in the space.
@@ -570,7 +586,10 @@ func (s *Space) EachShape(space *Space, f func(s *Shape)) {
 	C.cpSpaceEachShape(
 		s.c,
 		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_shape_iterator_func)),
-		unsafe.Pointer(&f),
+		unsafe.Pointer(&spaceShapeIterData{
+			cb:    f,
+			Space: s,
+		}),
 	)
 }
 

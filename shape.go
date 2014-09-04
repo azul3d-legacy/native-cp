@@ -69,6 +69,7 @@ func ShapeFilterNew(group Group, categories, mask Bitmask) ShapeFilter {
 type Shape struct {
 	c        *C.cpShape
 	spaceRef *Space
+	bodyRef  *Body
 	userData interface{}
 }
 
