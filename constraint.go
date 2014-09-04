@@ -47,12 +47,12 @@ func (c *Constraint) Space() *Space {
 
 // Get the first body the constraint is attached to.
 func (c *Constraint) BodyA() *Body {
-	return goBody(C.cpConstraintGetBodyA(c.c))
+	return goBody(C.cpConstraintGetBodyA(c.c), c.Space())
 }
 
 // Get the second body the constraint is attached to.
 func (c *Constraint) BodyB() *Body {
-	return goBody(C.cpConstraintGetBodyB(c.c))
+	return goBody(C.cpConstraintGetBodyB(c.c), c.Space())
 }
 
 // Get the maximum force that this constraint is allowed to use.

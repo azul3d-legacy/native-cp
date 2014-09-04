@@ -244,7 +244,7 @@ func (s *Space) AddShape(shape *Shape) *Shape {
 
 // Add a rigid body to the simulation.
 func (s *Space) AddBody(body *Body) *Body {
-	return goBody(C.cpSpaceAddBody(s.c, body.c))
+	return goBody(C.cpSpaceAddBody(s.c, body.c), s)
 }
 
 // Add a constraint to the simulation.
@@ -534,11 +534,16 @@ func (s *Space) ShapeQuery(shape *Shape, f SpaceShapeQueryFunc, data interface{}
 	))
 }
 
+type spaceBodyIterData struct {
+	cb func(b *Body)
+	*Space
+}
+
 //export go_chipmunk_space_body_iterator_func
 func go_chipmunk_space_body_iterator_func(cbody, data unsafe.Pointer) {
-	body := goBody((*C.cpBody)(cbody))
-	f := *(*func(*Body))(data)
-	f(body)
+	iterData := (*spaceBodyIterData)(data)
+	body := goBody((*C.cpBody)(cbody), iterData.Space)
+	iterData.cb(body)
 }
 
 // Space/body iterator callback function type.
@@ -546,7 +551,10 @@ func (s *Space) EachBody(space *Space, f func(b *Body)) {
 	C.cpSpaceEachBody(
 		s.c,
 		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_body_iterator_func)),
-		unsafe.Pointer(&f),
+		unsafe.Pointer(&spaceBodyIterData{
+			cb: f,
+			Space: s,
+		}),
 	)
 }
 

@@ -163,7 +163,7 @@ func (s *Shape) Space() *Space {
 
 // The cpBody this shape is connected to.
 func (s *Shape) Body() *Body {
-	return goBody(C.cpShapeGetBody(s.c))
+	return goBody(C.cpShapeGetBody(s.c), s.Space())
 }
 
 // Set the cpBody this shape is connected to.

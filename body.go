@@ -44,22 +44,25 @@ type Body struct {
 	userData         interface{}
 	bodyVelocityFunc BodyVelocityFunc
 	bodyPositionFunc BodyPositionFunc
+	spaceRef *Space
 }
 
-func goBody(c *C.cpBody) *Body {
+func goBody(c *C.cpBody, optional *Space) *Body {
 	data := C.cpBodyGetUserData(c)
-	return (*Body)(data)
+	g := (*Body)(data)
+	g.spaceRef = optional
+	return g
 }
 
 //export go_chipmunk_body_velocity_func
 func go_chipmunk_body_velocity_func(cbody unsafe.Pointer, gravity C.cpVect, damping C.cpFloat, dt C.cpFloat) {
-	b := goBody((*C.cpBody)(unsafe.Pointer(cbody)))
+	b := goBody((*C.cpBody)(unsafe.Pointer(cbody)), nil)
 	b.bodyVelocityFunc(b, goVect(gravity), float64(damping), float64(dt))
 }
 
 //export go_chipmunk_body_position_func
 func go_chipmunk_body_position_func(cbody unsafe.Pointer, dt C.cpFloat) {
-	b := goBody((*C.cpBody)(unsafe.Pointer(cbody)))
+	b := goBody((*C.cpBody)(unsafe.Pointer(cbody)), nil)
 	b.bodyPositionFunc(b, float64(dt))
 }
 
@@ -364,7 +367,7 @@ func (b *Body) KineticEnergy() float64 {
 
 //export go_chipmunk_body_each_shape
 func go_chipmunk_body_each_shape(cbody, cshape, data unsafe.Pointer) {
-	body := goBody((*C.cpBody)(cbody))
+	body := goBody((*C.cpBody)(cbody), nil)
 	shape := goShape((*C.cpShape)(cshape))
 	f := *(*func(b *Body, s *Shape))(data)
 	f(body, shape)
@@ -381,7 +384,7 @@ func (b *Body) EachShape(f func(b *Body, s *Shape)) {
 
 //export go_chipmunk_body_each_constraint
 func go_chipmunk_body_each_constraint(cbody, cconstraint, data unsafe.Pointer) {
-	body := goBody((*C.cpBody)(cbody))
+	body := goBody((*C.cpBody)(cbody), nil)
 	constraint := goConstraint((*C.cpConstraint)(cconstraint))
 	f := *(*func(b *Body, c *Constraint))(data)
 	f(body, constraint)
@@ -398,7 +401,7 @@ func (b *Body) EachConstraint(f func(b *Body, c *Constraint)) {
 
 //export go_chipmunk_body_each_arbiter
 func go_chipmunk_body_each_arbiter(cbody, carbiter, data unsafe.Pointer) {
-	body := goBody((*C.cpBody)(cbody))
+	body := goBody((*C.cpBody)(cbody), nil)
 	arbiter := goArbiter((*C.cpArbiter)(carbiter))
 	f := *(*func(b *Body, c *Arbiter))(data)
 	f(body, arbiter)
