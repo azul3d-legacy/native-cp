@@ -71,7 +71,7 @@ func (shape *Shape) PolyShapeSetVerts(verts []Vect, transform Transform) {
 		(*C.cpShape)(unsafe.Pointer(shape)),
 		C.int(len(verts)),
 		(*C.cpVect)(unsafe.Pointer(&verts[0])),
-		*(*C.cpTransform)(unsafe.Pointer(&transform)),
+		transform.c(),
 	)
 }
 

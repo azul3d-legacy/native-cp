@@ -119,10 +119,7 @@ func (s *Shape) CacheBB() BB {
 
 // Update, cache and return the bounding box of a shape with an explicit transformation.
 func (s *Shape) Update(transform Transform) BB {
-	return goBB(C.cpShapeUpdate(
-		s.c,
-		*(*C.cpTransform)(unsafe.Pointer(&transform)),
-	))
+	return goBB(C.cpShapeUpdate(s.c, transform.c()))
 }
 
 // Perform a nearest point query. It finds the closest point on the surface of

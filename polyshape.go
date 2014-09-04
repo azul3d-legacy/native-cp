@@ -22,7 +22,7 @@ func (b *Body) PolyShapeNew(verts []Vect, transform Transform, radius float64) *
 		b.c,
 		C.int(len(verts)),
 		(*C.cpVect)(unsafe.Pointer(&verts[0])),
-		*(*C.cpTransform)(unsafe.Pointer(&transform)),
+		transform.c(),
 		C.cpFloat(radius),
 	)
 	if s.c == nil {
