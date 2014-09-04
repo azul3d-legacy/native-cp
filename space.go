@@ -239,7 +239,7 @@ func (s *Space) IsLocked() bool {
 //
 // If the shape is attached to a static body, it will be added as a static shape.
 func (s *Space) AddShape(shape *Shape) *Shape {
-	return goShape(C.cpSpaceAddShape(s.c, shape.c))
+	return goShape(C.cpSpaceAddShape(s.c, shape.c), s)
 }
 
 // Add a rigid body to the simulation.
@@ -397,7 +397,7 @@ type spacePointQueryPair struct {
 
 //export go_chipmunk_space_point_query_func
 func go_chipmunk_space_point_query_func(cshape unsafe.Pointer, cpoint C.cpVect, cdist C.cpFloat, cgradient C.cpVect, data unsafe.Pointer) {
-	shape := goShape((*C.cpShape)(cshape))
+	shape := goShape((*C.cpShape)(cshape), nil)
 	point := *(*Vect)(unsafe.Pointer(&cpoint))
 	dist := *(*float64)(unsafe.Pointer(&cdist))
 	gradient := *(*Vect)(unsafe.Pointer(&cgradient))
@@ -427,7 +427,7 @@ func (s *Space) PointQueryNearest(point Vect, maxDistance float64, filter ShapeF
 		C.cpFloat(maxDistance),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
 		(*C.cpPointQueryInfo)(unsafe.Pointer(out)),
-	))
+	), s)
 	return
 }
 
@@ -441,7 +441,7 @@ type spaceSegmentQueryPair struct {
 
 //export go_chipmunk_space_segment_query_func
 func go_chipmunk_space_segment_query_func(cshape unsafe.Pointer, cpoint, cnormal C.cpVect, calpha C.cpFloat, data unsafe.Pointer) {
-	shape := goShape((*C.cpShape)(cshape))
+	shape := goShape((*C.cpShape)(cshape), nil)
 	point := *(*Vect)(unsafe.Pointer(&cpoint))
 	normal := *(*Vect)(unsafe.Pointer(&cnormal))
 	alpha := *(*float64)(unsafe.Pointer(&calpha))
@@ -474,7 +474,7 @@ func (s *Space) SegmentQueryFirst(start, end Vect, radius float64, filter ShapeF
 		C.cpFloat(radius),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
 		(*C.cpSegmentQueryInfo)(unsafe.Pointer(out)),
-	))
+	), s)
 	return
 }
 
@@ -488,7 +488,7 @@ type spaceBBQueryPair struct {
 
 //export go_chipmunk_space_bb_query_func
 func go_chipmunk_space_bb_query_func(cshape unsafe.Pointer, data unsafe.Pointer) {
-	shape := goShape((*C.cpShape)(cshape))
+	shape := goShape((*C.cpShape)(cshape), nil)
 	pair := (*spaceBBQueryPair)(data)
 	pair.f(shape, pair.data)
 }
@@ -517,7 +517,7 @@ type spaceShapeQueryPair struct {
 
 //export go_chipmunk_space_shape_query_func
 func go_chipmunk_space_shape_query_func(cshape, cpoints unsafe.Pointer, data unsafe.Pointer) {
-	shape := goShape((*C.cpShape)(cshape))
+	shape := goShape((*C.cpShape)(cshape), nil)
 	points := (*ContactPointSet)(cpoints)
 	pair := (*spaceShapeQueryPair)(data)
 	pair.f(shape, points, pair.data)
@@ -560,7 +560,7 @@ func (s *Space) EachBody(space *Space, f func(b *Body)) {
 
 //export go_chipmunk_space_shape_iterator_func
 func go_chipmunk_space_shape_iterator_func(cshape, data unsafe.Pointer) {
-	shape := goShape((*C.cpShape)(cshape))
+	shape := goShape((*C.cpShape)(cshape), nil)
 	f := *(*func(*Shape))(data)
 	f(shape)
 }

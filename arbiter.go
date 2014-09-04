@@ -103,7 +103,7 @@ func (arb *Arbiter) Shapes() (a, b *Shape) {
 		&ca,
 		&cb,
 	)
-	return goShape(ca), goShape(cb)
+	return goShape(ca, nil), goShape(cb, nil)
 }
 
 type Int C.int

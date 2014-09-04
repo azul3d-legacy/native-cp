@@ -68,12 +68,15 @@ func ShapeFilterNew(group Group, categories, mask Bitmask) ShapeFilter {
 // The Shape struct defines the shape of a rigid body.
 type Shape struct {
 	c        *C.cpShape
+	spaceRef *Space
 	userData interface{}
 }
 
-func goShape(c *C.cpShape) *Shape {
+func goShape(c *C.cpShape, optional *Space) *Shape {
 	data := C.cpShapeGetUserData(c)
-	return (*Shape)(data)
+	g := (*Shape)(data)
+	g.spaceRef = optional
+	return g
 }
 
 // Allocate and initialize a circle shape.

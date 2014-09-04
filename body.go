@@ -368,7 +368,7 @@ func (b *Body) KineticEnergy() float64 {
 //export go_chipmunk_body_each_shape
 func go_chipmunk_body_each_shape(cbody, cshape, data unsafe.Pointer) {
 	body := goBody((*C.cpBody)(cbody), nil)
-	shape := goShape((*C.cpShape)(cshape))
+	shape := goShape((*C.cpShape)(cshape), nil)
 	f := *(*func(b *Body, s *Shape))(data)
 	f(body, shape)
 }
