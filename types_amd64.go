@@ -19,15 +19,6 @@ type Bitmask uint32
 
 type Timestamp uint32
 
-type Transform struct {
-	A  float64
-	B  float64
-	C  float64
-	D  float64
-	Tx float64
-	Ty float64
-}
-
 type SpaceDebugColor struct {
 	R float32
 	G float32

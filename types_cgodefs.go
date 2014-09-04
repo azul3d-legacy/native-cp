@@ -32,7 +32,4 @@ type Bitmask C.cpBitmask
 // Type used for various timestamps in Chipmunk.
 type Timestamp C.cpTimestamp
 
-// Column major affine transform.
-type Transform C.cpTransform
-
 type SpaceDebugColor C.cpSpaceDebugColor

@@ -13,6 +13,16 @@ import (
 	"unsafe"
 )
 
+// Column major affine transform.
+type Transform struct {
+	A  float64
+	B  float64
+	C  float64
+	D  float64
+	Tx float64
+	Ty float64
+}
+
 // Identity transform matrix.
 var (
 	TransformIdentity = Transform{1, 0, 0, 1, 0, 0}
