@@ -136,10 +136,7 @@ func MomentForBox(m, width, height float64) float64 {
 
 // Calculate the moment of inertia for a solid box.
 func MomentForBox2(m float64, box BB) float64 {
-	return float64(C.cpMomentForBox2(
-		C.cpFloat(m),
-		*(*C.cpBB)(unsafe.Pointer(&box)),
-	))
+	return float64(C.cpMomentForBox2(C.cpFloat(m), box.c()))
 }
 
 // Calculate the convex hull of a given set of points. Returns the count of points in the hull.

@@ -51,11 +51,7 @@ func (b *Body) BoxShapeNew(width, height, radius float64) *Shape {
 // Allocate and initialize an offset box shaped polygon shape.
 func (b *Body) BoxShapeNew2(box BB, radius float64) *Shape {
 	s := new(Shape)
-	s.c = C.cpBoxShapeNew2(
-		b.c,
-		*(*C.cpBB)(unsafe.Pointer(&box)),
-		C.cpFloat(radius),
-	)
+	s.c = C.cpBoxShapeNew2(b.c, box.c(), C.cpFloat(radius))
 	if s.c == nil {
 		return nil
 	}

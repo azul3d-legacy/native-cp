@@ -86,11 +86,10 @@ func (t Transform) Vect(v Vect) Vect {
 
 // Transform a BB.
 func (t Transform) BB(bb BB) BB {
-	ret := C.cpTransformbBB(
+	return goBB(C.cpTransformbBB(
 		*(*C.cpTransform)(unsafe.Pointer(&t)),
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-	)
-	return *(*BB)(unsafe.Pointer(&ret))
+		bb.c(),
+	))
 }
 
 // Create a translation matrix.
@@ -150,9 +149,7 @@ func (outer Transform) WrapInverse(inner Transform) Transform {
 }
 
 func TransformOrtho(bb BB) Transform {
-	ret := C.cpTransformOrtho(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-	)
+	ret := C.cpTransformOrtho(bb.c())
 	return *(*Transform)(unsafe.Pointer(&ret))
 }
 

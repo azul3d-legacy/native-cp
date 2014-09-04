@@ -9,7 +9,25 @@ package cp
 */
 import "C"
 
-import "unsafe"
+// c converts a BB to a C.cpBB.
+func (b BB) c() C.cpBB {
+	var cp C.cpBB
+	cp.l = C.cpFloat(b.L)
+	cp.b = C.cpFloat(b.B)
+	cp.r = C.cpFloat(b.R)
+	cp.t = C.cpFloat(b.T)
+	return cp
+}
+
+// goBB converts C.cpBB to a Go BB.
+func goBB(b C.cpBB) BB {
+	return BB{
+		L: float64(b.l),
+		B: float64(b.b),
+		R: float64(b.r),
+		T: float64(b.t),
+	}
+}
 
 // Convenience constructor for BB structs.
 func BBNew(l, b, r, t float64) BB {
@@ -23,111 +41,71 @@ func BBNew(l, b, r, t float64) BB {
 
 // Constructs a BB centered on a point with the given extents (half sizes).
 func BBNewForExtents(c Vect, hw, hh float64) BB {
-	ret := C.cpBBNewForExtents(c.c(), C.cpFloat(hw), C.cpFloat(hh))
-	return *(*BB)(unsafe.Pointer(&ret))
+	return goBB(C.cpBBNewForExtents(c.c(), C.cpFloat(hw), C.cpFloat(hh)))
 }
 
 // Constructs a BB for a circle with the given position and radius.
 func BBNewForCircle(p Vect, r float64) BB {
-	ret := C.cpBBNewForCircle(p.c(), C.cpFloat(r))
-	return *(*BB)(unsafe.Pointer(&ret))
+	return goBB(C.cpBBNewForCircle(p.c(), C.cpFloat(r)))
 }
 
 // Returns true if a and b intersect.
 func (a BB) Intersects(b BB) bool {
-	return goBool(C.cpBBIntersects(
-		*(*C.cpBB)(unsafe.Pointer(&a)),
-		*(*C.cpBB)(unsafe.Pointer(&b)),
-	))
+	return goBool(C.cpBBIntersects(a.c(), b.c()))
 }
 
 // Returns true if  other lies completely within bb.
 func (bb BB) ContainsBB(other BB) bool {
-	return goBool(C.cpBBContainsBB(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		*(*C.cpBB)(unsafe.Pointer(&other)),
-	))
+	return goBool(C.cpBBContainsBB(bb.c(), other.c()))
 }
 
 // Returns true if bb contains v.
 func (bb BB) ContainsVect(v Vect) bool {
-	return goBool(C.cpBBContainsVect(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		v.c(),
-	))
+	return goBool(C.cpBBContainsVect(bb.c(), v.c()))
 }
 
 // Returns a bounding box that holds both bounding boxes.
 func (a BB) Merge(b BB) BB {
-	ret := C.cpBBMerge(
-		*(*C.cpBB)(unsafe.Pointer(&a)),
-		*(*C.cpBB)(unsafe.Pointer(&b)),
-	)
-	return *(*BB)(unsafe.Pointer(&ret))
+	return goBB(C.cpBBMerge(a.c(), b.c()))
 }
 
 // Returns a bounding box that holds both bb and v.
 func (bb BB) Expand(v Vect) BB {
-	ret := C.cpBBExpand(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		v.c(),
-	)
-	return *(*BB)(unsafe.Pointer(&ret))
+	return goBB(C.cpBBExpand(bb.c(), v.c()))
 }
 
 // Returns the center of a bounding box.
 func (bb BB) Center() Vect {
-	return goVect(C.cpBBCenter(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-	))
+	return goVect(C.cpBBCenter(bb.c()))
 }
 
 // Returns the area of the bounding box.
 func (bb BB) Area() float64 {
-	return float64(C.cpBBArea(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-	))
+	return float64(C.cpBBArea(bb.c()))
 }
 
 // Merges a and b and returns the area of the merged bounding box.
 func (a BB) MergedArea(b BB) float64 {
-	return float64(C.cpBBMergedArea(
-		*(*C.cpBB)(unsafe.Pointer(&a)),
-		*(*C.cpBB)(unsafe.Pointer(&b)),
-	))
+	return float64(C.cpBBMergedArea(a.c(), b.c()))
 }
 
 // Returns the fraction along the segment query the BB is hit. Returns
 // INFINITY if it doesn't hit.
 func (bb BB) SegmentQuery(a, b Vect) float64 {
-	return float64(C.cpBBSegmentQuery(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		a.c(),
-		b.c(),
-	))
+	return float64(C.cpBBSegmentQuery(bb.c(), a.c(), b.c()))
 }
 
 // Return true if the bounding box intersects the line segment with ends  a and  b.
 func (bb BB) IntersectsSegment(a, b Vect) bool {
-	return goBool(C.cpBBIntersectsSegment(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		a.c(),
-		b.c(),
-	))
+	return goBool(C.cpBBIntersectsSegment(bb.c(), a.c(), b.c()))
 }
 
 // Clamp a vector to a bounding box.
 func (bb BB) ClampVect(v Vect) Vect {
-	return goVect(C.cpBBClampVect(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		v.c(),
-	))
+	return goVect(C.cpBBClampVect(bb.c(), v.c()))
 }
 
 // Wrap a vector to a bounding box.
 func (bb BB) WrapVect(v Vect) Vect {
-	return goVect(C.cpBBWrapVect(
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		v.c(),
-	))
+	return goVect(C.cpBBWrapVect(bb.c(), v.c()))
 }

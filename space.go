@@ -500,7 +500,7 @@ func (s *Space) BBQuery(bb BB, filter ShapeFilter, f SpaceBBQueryFunc, data inte
 	pair := &spaceBBQueryPair{f, data}
 	C.cpSpaceBBQuery(
 		s.c,
-		*(*C.cpBB)(unsafe.Pointer(&bb)),
+		bb.c(),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
 		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_bb_query_func)),
 		unsafe.Pointer(pair),

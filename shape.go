@@ -114,17 +114,15 @@ func (s *Shape) Free() {
 // Update, cache and return the bounding box of a shape based on the body it's
 // attached to.
 func (s *Shape) CacheBB() BB {
-	ret := C.cpShapeCacheBB(s.c)
-	return *(*BB)(unsafe.Pointer(&ret))
+	return goBB(C.cpShapeCacheBB(s.c))
 }
 
 // Update, cache and return the bounding box of a shape with an explicit transformation.
 func (s *Shape) Update(transform Transform) BB {
-	ret := C.cpShapeUpdate(
+	return goBB(C.cpShapeUpdate(
 		s.c,
 		*(*C.cpTransform)(unsafe.Pointer(&transform)),
-	)
-	return *(*BB)(unsafe.Pointer(&ret))
+	))
 }
 
 // Perform a nearest point query. It finds the closest point on the surface of
@@ -221,8 +219,7 @@ func (s *Shape) CenterOfGravity() Vect {
 
 // Get the bounding box that contains the shape given it's current position and angle.
 func (s *Shape) BB() BB {
-	ret := C.cpShapeGetBB(s.c)
-	return *(*BB)(unsafe.Pointer(&ret))
+	return goBB(C.cpShapeGetBB(s.c))
 }
 
 // Get if the shape is set to be a sensor or not.
