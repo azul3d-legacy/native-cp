@@ -28,13 +28,6 @@ type Transform struct {
 	Ty float64
 }
 
-type BB struct {
-	L float64
-	B float64
-	R float64
-	T float64
-}
-
 type SpaceDebugColor struct {
 	R float32
 	G float32

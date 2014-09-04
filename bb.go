@@ -9,6 +9,14 @@ package cp
 */
 import "C"
 
+// Chipmunk's axis-aligned 2D bounding box type. (left, bottom, right, top)
+type BB struct {
+	L float64
+	B float64
+	R float64
+	T float64
+}
+
 // c converts a BB to a C.cpBB.
 func (b BB) c() C.cpBB {
 	var cp C.cpBB

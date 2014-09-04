@@ -35,7 +35,4 @@ type Timestamp C.cpTimestamp
 // Column major affine transform.
 type Transform C.cpTransform
 
-// Chipmunk's axis-aligned 2D bounding box type. (left, bottom, right, top)
-type BB C.cpBB
-
 type SpaceDebugColor C.cpSpaceDebugColor
