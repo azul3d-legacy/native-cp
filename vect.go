@@ -166,7 +166,7 @@ func Vnear(v1, v2 Vect, dist float64) bool {
 	return goBool(C.cpvnear(v1.c(), v2.c(), C.cpFloat(dist)))
 }
 
-// Row major [[a, b][c d]]
+// Row major [[a, b][c, d]]
 type Mat2x2 struct {
 	A float64
 	B float64
