@@ -19,7 +19,7 @@ import (
 type Constraint struct {
 	c                            *C.cpConstraint
 	aBodyRef, bBodyRef *Body
-	space *Space
+	spaceRef *Space
 	userData                     interface{}
 	preSolveFunc, postSolveFunc  func(*Constraint, *Space)
 	dampedRotarySpringTorqueFunc func(spring *Constraint, relativeAngle float64) float64
@@ -29,7 +29,7 @@ type Constraint struct {
 func goConstraint(c *C.cpConstraint, optional *Space) *Constraint {
 	data := C.cpConstraintGetUserData(c)
 	g := (*Constraint)(data)
-	g.space = optional
+	g.spaceRef = optional
 	return g
 }
 
