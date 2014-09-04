@@ -107,6 +107,5 @@ func (c *Constraint) DampedSpringForceFunc() func(spring *Constraint, dist float
 //export go_chipmunk_damped_spring_force_func
 func go_chipmunk_damped_spring_force_func(cspring unsafe.Pointer, cdist C.cpFloat) float64 {
 	spring := goConstraint((*C.cpConstraint)(cspring))
-	dist := *(*float64)(unsafe.Pointer(&cdist))
-	return spring.dampedRotarySpringTorqueFunc(spring, dist)
+	return spring.dampedRotarySpringTorqueFunc(spring, float64(dist))
 }
