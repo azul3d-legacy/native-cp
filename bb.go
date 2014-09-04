@@ -23,20 +23,13 @@ func BBNew(l, b, r, t float64) BB {
 
 // Constructs a BB centered on a point with the given extents (half sizes).
 func BBNewForExtents(c Vect, hw, hh float64) BB {
-	ret := C.cpBBNewForExtents(
-		*(*C.cpVect)(unsafe.Pointer(&c)),
-		C.cpFloat(hw),
-		C.cpFloat(hh),
-	)
+	ret := C.cpBBNewForExtents(c.c(), C.cpFloat(hw), C.cpFloat(hh))
 	return *(*BB)(unsafe.Pointer(&ret))
 }
 
 // Constructs a BB for a circle with the given position and radius.
 func BBNewForCircle(p Vect, r float64) BB {
-	ret := C.cpBBNewForCircle(
-		*(*C.cpVect)(unsafe.Pointer(&p)),
-		C.cpFloat(r),
-	)
+	ret := C.cpBBNewForCircle(p.c(), C.cpFloat(r))
 	return *(*BB)(unsafe.Pointer(&ret))
 }
 
@@ -60,7 +53,7 @@ func (bb BB) ContainsBB(other BB) bool {
 func (bb BB) ContainsVect(v Vect) bool {
 	return goBool(C.cpBBContainsVect(
 		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		*(*C.cpVect)(unsafe.Pointer(&v)),
+		v.c(),
 	))
 }
 
@@ -77,17 +70,16 @@ func (a BB) Merge(b BB) BB {
 func (bb BB) Expand(v Vect) BB {
 	ret := C.cpBBExpand(
 		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		*(*C.cpVect)(unsafe.Pointer(&v)),
+		v.c(),
 	)
 	return *(*BB)(unsafe.Pointer(&ret))
 }
 
 // Returns the center of a bounding box.
 func (bb BB) Center() Vect {
-	ret := C.cpBBCenter(
+	return goVect(C.cpBBCenter(
 		*(*C.cpBB)(unsafe.Pointer(&bb)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	))
 }
 
 // Returns the area of the bounding box.
@@ -110,8 +102,8 @@ func (a BB) MergedArea(b BB) float64 {
 func (bb BB) SegmentQuery(a, b Vect) float64 {
 	return float64(C.cpBBSegmentQuery(
 		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		*(*C.cpVect)(unsafe.Pointer(&a)),
-		*(*C.cpVect)(unsafe.Pointer(&b)),
+		a.c(),
+		b.c(),
 	))
 }
 
@@ -119,25 +111,23 @@ func (bb BB) SegmentQuery(a, b Vect) float64 {
 func (bb BB) IntersectsSegment(a, b Vect) bool {
 	return goBool(C.cpBBIntersectsSegment(
 		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		*(*C.cpVect)(unsafe.Pointer(&a)),
-		*(*C.cpVect)(unsafe.Pointer(&b)),
+		a.c(),
+		b.c(),
 	))
 }
 
 // Clamp a vector to a bounding box.
 func (bb BB) ClampVect(v Vect) Vect {
-	ret := C.cpBBClampVect(
+	return goVect(C.cpBBClampVect(
 		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		*(*C.cpVect)(unsafe.Pointer(&v)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+		v.c(),
+	))
 }
 
 // Wrap a vector to a bounding box.
 func (bb BB) WrapVect(v Vect) Vect {
-	ret := C.cpBBWrapVect(
+	return goVect(C.cpBBWrapVect(
 		*(*C.cpBB)(unsafe.Pointer(&bb)),
-		*(*C.cpVect)(unsafe.Pointer(&v)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+		v.c(),
+	))
 }

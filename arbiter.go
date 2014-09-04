@@ -57,8 +57,7 @@ func (a *Arbiter) SetFriction(friction float64) {
 
 // Get the relative surface velocity of the two shapes in contact.
 func (a *Arbiter) SurfaceVelocity() Vect {
-	ret := C.cpArbiterGetSurfaceVelocity(a.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpArbiterGetSurfaceVelocity(a.c))
 }
 
 // Override the relative surface velocity of the two shapes in contact.
@@ -66,17 +65,13 @@ func (a *Arbiter) SurfaceVelocity() Vect {
 // By default this is calculated to be the difference of the two surface
 // velocities clamped to the tangent plane.
 func (a *Arbiter) SetSurfaceVelocity(vr Vect) {
-	C.cpArbiterSetSurfaceVelocity(
-		a.c,
-		*(*C.cpVect)(unsafe.Pointer(&vr)),
-	)
+	C.cpArbiterSetSurfaceVelocity(a.c, vr.c())
 }
 
 // Calculate the total impulse including the friction that was applied by this arbiter.
 // This function should only be called from a post-solve, post-step or cpBodyEachArbiter callback.
 func (a *Arbiter) TotalImpulse() Vect {
-	ret := C.cpArbiterTotalImpulse(a.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpArbiterTotalImpulse(a.c))
 }
 
 func (a *Arbiter) UserData() interface{} {
@@ -171,20 +166,17 @@ func (a *Arbiter) Count() int {
 
 // Get the normal of the collision.
 func (a *Arbiter) GetNormal() Vect {
-	ret := C.cpArbiterGetNormal(a.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpArbiterGetNormal(a.c))
 }
 
 // Get the position of the  ith contact point on the surface of the first shape.
 func (a *Arbiter) Point1(i int) Vect {
-	ret := C.cpArbiterGetPointA(a.c, C.int(i))
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpArbiterGetPointA(a.c, C.int(i)))
 }
 
 // Get the position of the  ith contact point on the surface of the second shape.
 func (a *Arbiter) Point2(i int) Vect {
-	ret := C.cpArbiterGetPointB(a.c, C.int(i))
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpArbiterGetPointB(a.c, C.int(i)))
 }
 
 // Get the depth of the  ith contact point.

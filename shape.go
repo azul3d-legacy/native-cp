@@ -79,11 +79,7 @@ func goShape(c *C.cpShape) *Shape {
 // Allocate and initialize a circle shape.
 func (b *Body) CircleShapeNew(radius float64, offset Vect) *Shape {
 	s := new(Shape)
-	s.c = C.cpCircleShapeNew(
-		b.c,
-		C.cpFloat(radius),
-		*(*C.cpVect)(unsafe.Pointer(&offset)),
-	)
+	s.c = C.cpCircleShapeNew(b.c, C.cpFloat(radius), offset.c())
 	if s.c == nil {
 		return nil
 	}
@@ -95,12 +91,7 @@ func (b *Body) CircleShapeNew(radius float64, offset Vect) *Shape {
 // Allocate and initialize a segment shape.
 func (bd *Body) SegmentShapeNew(a, b Vect, radius float64) *Shape {
 	s := new(Shape)
-	s.c = C.cpSegmentShapeNew(
-		bd.c,
-		*(*C.cpVect)(unsafe.Pointer(&a)),
-		*(*C.cpVect)(unsafe.Pointer(&b)),
-		C.cpFloat(radius),
-	)
+	s.c = C.cpSegmentShapeNew(bd.c, a.c(), b.c(), C.cpFloat(radius))
 	if s.c == nil {
 		return nil
 	}
@@ -145,7 +136,7 @@ func (s *Shape) PointQuery(p Vect) (out *PointQueryInfo, d float64) {
 	out = new(PointQueryInfo)
 	d = float64(C.cpShapePointQuery(
 		s.c,
-		*(*C.cpVect)(unsafe.Pointer(&p)),
+		p.c(),
 		(*C.cpPointQueryInfo)(unsafe.Pointer(&out)),
 	))
 	return
@@ -156,8 +147,8 @@ func (s *Shape) SegmentQuery(a, b Vect, radius float64) (info *SegmentQueryInfo,
 	info = new(SegmentQueryInfo)
 	ret = goBool(C.cpShapeSegmentQuery(
 		s.c,
-		*(*C.cpVect)(unsafe.Pointer(&a)),
-		*(*C.cpVect)(unsafe.Pointer(&b)),
+		a.c(),
+		b.c(),
 		C.cpFloat(radius),
 		(*C.cpSegmentQueryInfo)(unsafe.Pointer(&info)),
 	))
@@ -225,8 +216,7 @@ func (s *Shape) Area() float64 {
 
 // Get the centroid of this shape.
 func (s *Shape) CenterOfGravity() Vect {
-	ret := C.cpShapeGetCenterOfGravity(s.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpShapeGetCenterOfGravity(s.c))
 }
 
 // Get the bounding box that contains the shape given it's current position and angle.
@@ -277,15 +267,14 @@ func (s *Shape) SetFriction(friction float64) {
 
 // Get the surface velocity of this shape.
 func (s *Shape) SurfaceVelocity() Vect {
-	ret := C.cpShapeGetSurfaceVelocity(s.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpShapeGetSurfaceVelocity(s.c))
 }
 
 // Set the surface velocity of this shape.
 func (s *Shape) SetSurfaceVelocity(surfaceVelocity Vect) {
 	C.cpShapeSetSurfaceVelocity(
 		s.c,
-		*(*C.cpVect)(unsafe.Pointer(&surfaceVelocity)),
+		surfaceVelocity.c(),
 	)
 	return
 }
@@ -329,8 +318,7 @@ func (s *Shape) SetFilter(filter ShapeFilter) {
 
 // Get the offset of a circle shape.
 func (s *Shape) CircleOffset() Vect {
-	ret := C.cpCircleShapeGetOffset(s.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpCircleShapeGetOffset(s.c))
 }
 
 // Get the radius of a circle shape.
@@ -342,27 +330,24 @@ func (s *Shape) CircleRadius() float64 {
 func (s *Shape) SegmentSetNeighbors(prev, next Vect) {
 	C.cpSegmentShapeSetNeighbors(
 		s.c,
-		*(*C.cpVect)(unsafe.Pointer(&prev)),
-		*(*C.cpVect)(unsafe.Pointer(&next)),
+		prev.c(),
+		next.c(),
 	)
 }
 
 // Get the first endpoint of a segment shape.
 func (s *Shape) SegmentA() Vect {
-	ret := C.cpSegmentShapeGetA(s.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpSegmentShapeGetA(s.c))
 }
 
 // Get the second endpoint of a segment shape.
 func (s *Shape) SegmentB() Vect {
-	ret := C.cpSegmentShapeGetB(s.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpSegmentShapeGetB(s.c))
 }
 
 // Get the normal of a segment shape.
 func (s *Shape) SegmentNormal() Vect {
-	ret := C.cpSegmentShapeGetNormal(s.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpSegmentShapeGetNormal(s.c))
 }
 
 // Get the first endpoint of a segment shape.

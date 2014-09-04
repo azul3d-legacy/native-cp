@@ -26,8 +26,8 @@ func DampedSpringNew(a, b *Body, anchorA, anchorB Vect, restLength, stiffness, d
 	c.c = C.cpDampedSpringNew(
 		a.c,
 		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
-		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
+		anchorA.c(),
+		anchorB.c(),
 		C.cpFloat(restLength),
 		C.cpFloat(stiffness),
 		C.cpFloat(damping),
@@ -72,30 +72,22 @@ func (c *Constraint) DampedSpringSetDamping(damping float64) {
 
 // Get the location of the first anchor relative to the first body.
 func (c *Constraint) DampedSpringAnchorA() Vect {
-	ret := C.cpDampedSpringGetAnchorA(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpDampedSpringGetAnchorA(c.c))
 }
 
 // Set the location of the first anchor relative to the first body.
 func (c *Constraint) DampedSpringSetAnchorA(anchorA Vect) {
-	C.cpDampedSpringSetAnchorA(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
-	)
+	C.cpDampedSpringSetAnchorA(c.c, anchorA.c())
 }
 
 // Get the location of the second anchor relative to the second body.
 func (c *Constraint) DampedSpringAnchorB() Vect {
-	ret := C.cpDampedSpringGetAnchorB(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpDampedSpringGetAnchorB(c.c))
 }
 
 // Set the location of the second anchor relative to the second body.
 func (c *Constraint) DampedSpringSetAnchorB(anchorA Vect) {
-	C.cpDampedSpringSetAnchorB(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
-	)
+	C.cpDampedSpringSetAnchorB(c.c, anchorA.c())
 }
 
 // Set the damping spring force callback function.

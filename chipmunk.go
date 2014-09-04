@@ -57,7 +57,7 @@ func MomentForCircle(m, r1, r2 float64, offset Vect) float64 {
 		C.cpFloat(m),
 		C.cpFloat(r1),
 		C.cpFloat(r2),
-		*(*C.cpVect)(unsafe.Pointer(&offset)),
+		offset.c(),
 	))
 }
 
@@ -77,8 +77,8 @@ func AreaForCircle(r1, r2 float64) float64 {
 func MomentForSegment(m float64, a, b Vect, radius float64) float64 {
 	return float64(C.cpMomentForSegment(
 		C.cpFloat(m),
-		*(*C.cpVect)(unsafe.Pointer(&a)),
-		*(*C.cpVect)(unsafe.Pointer(&b)),
+		a.c(),
+		b.c(),
 		C.cpFloat(radius),
 	))
 }
@@ -86,8 +86,8 @@ func MomentForSegment(m float64, a, b Vect, radius float64) float64 {
 // Calculate the area of a fattened (capsule shaped) line segment.
 func AreaForSegment(a, b Vect, radius float64) float64 {
 	return float64(C.cpAreaForSegment(
-		*(*C.cpVect)(unsafe.Pointer(&a)),
-		*(*C.cpVect)(unsafe.Pointer(&b)),
+		a.c(),
+		b.c(),
 		C.cpFloat(radius),
 	))
 }
@@ -99,7 +99,7 @@ func MomentForPoly(m float64, verts []Vect, offset Vect, radius float64) float64
 		C.cpFloat(m),
 		C.int(len(verts)),
 		(*C.cpVect)(unsafe.Pointer(&verts[0])),
-		*(*C.cpVect)(unsafe.Pointer(&offset)),
+		offset.c(),
 		C.cpFloat(radius),
 	))
 }
@@ -119,11 +119,10 @@ func AreaForPoly(verts []Vect, radius float64) float64 {
 
 // Calculate the natural centroid of a polygon.
 func CentroidForPoly(verts []Vect) Vect {
-	ret := C.cpCentroidForPoly(
+	return goVect(C.cpCentroidForPoly(
 		C.int(len(verts)),
 		(*C.cpVect)(unsafe.Pointer(&verts[0])),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	))
 }
 
 // Calculate the moment of inertia for a solid box.
@@ -165,10 +164,5 @@ func ConvexHull(count int, verts, result *Vect, first *int, tol float64) int {
 
 // Returns the closest point on the line segment ab, to the point p.
 func ClosetPointOnSegment(p, a, b Vect) Vect {
-	ret := C.cpClosetPointOnSegment(
-		*(*C.cpVect)(unsafe.Pointer(&p)),
-		*(*C.cpVect)(unsafe.Pointer(&a)),
-		*(*C.cpVect)(unsafe.Pointer(&b)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpClosetPointOnSegment(p.c(), a.c(), b.c()))
 }

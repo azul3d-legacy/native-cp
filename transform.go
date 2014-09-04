@@ -70,20 +70,18 @@ func (t1 Transform) Mult(t2 Transform) Transform {
 
 // Transform an absolute point. (i.e. a vertex)
 func (t Transform) Point(p Vect) Vect {
-	ret := C.cpTransformPoint(
+	return goVect(C.cpTransformPoint(
 		*(*C.cpTransform)(unsafe.Pointer(&t)),
-		*(*C.cpVect)(unsafe.Pointer(&p)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+		p.c(),
+	))
 }
 
 // Transform a vector (i.e. a normal)
 func (t Transform) Vect(v Vect) Vect {
-	ret := C.cpTransformVect(
+	return goVect(C.cpTransformVect(
 		*(*C.cpTransform)(unsafe.Pointer(&t)),
-		*(*C.cpVect)(unsafe.Pointer(&v)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+		v.c(),
+	))
 }
 
 // Transform a BB.
@@ -97,9 +95,7 @@ func (t Transform) BB(bb BB) BB {
 
 // Create a translation matrix.
 func TransformTranslate(translate Vect) Transform {
-	ret := C.cpTransformTranslate(
-		*(*C.cpVect)(unsafe.Pointer(&translate)),
-	)
+	ret := C.cpTransformTranslate(translate.c())
 	return *(*Transform)(unsafe.Pointer(&ret))
 }
 
@@ -123,7 +119,7 @@ func TransformRotate(radians float64) Transform {
 // Create a rigid transformation matrix. (translation + rotation)
 func TransformRigid(translate Vect, radians float64) Transform {
 	ret := C.cpTransformRigid(
-		*(*C.cpVect)(unsafe.Pointer(&translate)),
+		translate.c(),
 		C.cpFloat(radians),
 	)
 	return *(*Transform)(unsafe.Pointer(&ret))
@@ -161,18 +157,11 @@ func TransformOrtho(bb BB) Transform {
 }
 
 func TransformBoneScale(v0, v1 Vect) Transform {
-	ret := C.cpTransformBoneScale(
-		*(*C.cpVect)(unsafe.Pointer(&v0)),
-		*(*C.cpVect)(unsafe.Pointer(&v1)),
-	)
+	ret := C.cpTransformBoneScale(v0.c(), v1.c())
 	return *(*Transform)(unsafe.Pointer(&ret))
 }
 
 func TransformAxialScale(axis, pivot Vect, scale float64) Transform {
-	ret := C.cpTransformAxialScale(
-		*(*C.cpVect)(unsafe.Pointer(&axis)),
-		*(*C.cpVect)(unsafe.Pointer(&pivot)),
-		C.cpFloat(scale),
-	)
+	ret := C.cpTransformAxialScale(axis.c(), pivot.c(), C.cpFloat(scale))
 	return *(*Transform)(unsafe.Pointer(&ret))
 }

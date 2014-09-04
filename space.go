@@ -113,15 +113,11 @@ func (s *Space) SetIterations(iterations int) {
 
 // Gravity to pass to rigid bodies when integrating velocity.
 func (s *Space) Gravity() Vect {
-	ret := C.cpSpaceGetGravity(s.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpSpaceGetGravity(s.c))
 }
 
 func (s *Space) SetGravity(gravity Vect) {
-	C.cpSpaceSetGravity(
-		s.c,
-		*(*C.cpVect)(unsafe.Pointer(&gravity)),
-	)
+	C.cpSpaceSetGravity(s.c, gravity.c())
 }
 
 // Damping rate expressed as the fraction of velocity bodies retain each second.
@@ -243,26 +239,17 @@ func (s *Space) IsLocked() bool {
 //
 // If the shape is attached to a static body, it will be added as a static shape.
 func (s *Space) AddShape(shape *Shape) *Shape {
-	return goShape(C.cpSpaceAddShape(
-		s.c,
-		shape.c,
-	))
+	return goShape(C.cpSpaceAddShape(s.c, shape.c))
 }
 
 // Add a rigid body to the simulation.
 func (s *Space) AddBody(body *Body) *Body {
-	return goBody(C.cpSpaceAddBody(
-		s.c,
-		body.c,
-	))
+	return goBody(C.cpSpaceAddBody(s.c, body.c))
 }
 
 // Add a constraint to the simulation.
 func (s *Space) AddConstraint(constraint *Constraint) *Constraint {
-	return goConstraint(C.cpSpaceAddConstraint(
-		s.c,
-		constraint.c,
-	))
+	return goConstraint(C.cpSpaceAddConstraint(s.c, constraint.c))
 }
 
 // Remove a collision shape from the simulation.
@@ -423,7 +410,7 @@ func (s *Space) PointQuery(point Vect, maxDistance float64, filter ShapeFilter, 
 	pair := &spacePointQueryPair{f, data}
 	C.cpSpacePointQuery(
 		s.c,
-		*(*C.cpVect)(unsafe.Pointer(&point)),
+		point.c(),
 		C.cpFloat(maxDistance),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
 		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_point_query_func)),
@@ -436,7 +423,7 @@ func (s *Space) PointQueryNearest(point Vect, maxDistance float64, filter ShapeF
 	out = new(PointQueryInfo)
 	shape = goShape(C.cpSpacePointQueryNearest(
 		s.c,
-		*(*C.cpVect)(unsafe.Pointer(&point)),
+		point.c(),
 		C.cpFloat(maxDistance),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
 		(*C.cpPointQueryInfo)(unsafe.Pointer(out)),
@@ -468,8 +455,8 @@ func (s *Space) SegmentQuery(start, end Vect, radius float64, filter ShapeFilter
 	pair := &spaceSegmentQueryPair{f, data}
 	C.cpSpaceSegmentQuery(
 		s.c,
-		*(*C.cpVect)(unsafe.Pointer(&start)),
-		*(*C.cpVect)(unsafe.Pointer(&end)),
+		start.c(),
+		end.c(),
 		C.cpFloat(radius),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
 		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_segment_query_func)),
@@ -482,8 +469,8 @@ func (s *Space) SegmentQueryFirst(start, end Vect, radius float64, filter ShapeF
 	out = new(SegmentQueryInfo)
 	shape = goShape(C.cpSpaceSegmentQueryFirst(
 		s.c,
-		*(*C.cpVect)(unsafe.Pointer(&start)),
-		*(*C.cpVect)(unsafe.Pointer(&end)),
+		start.c(),
+		end.c(),
 		C.cpFloat(radius),
 		*(*C.cpShapeFilter)(unsafe.Pointer(&filter)),
 		(*C.cpSegmentQueryInfo)(unsafe.Pointer(out)),
@@ -657,12 +644,11 @@ type SpaceDebugDrawOptions struct {
 func go_chipmunk_space_debug_draw_circle_impl(cpos C.cpVect, cangle, cradius C.cpFloat, coutlineColor, cfillColor C.cpSpaceDebugColor, data unsafe.Pointer) {
 	options := (*SpaceDebugDrawOptions)(data)
 	if options.DrawCircle != nil {
-		pos := *(*Vect)(unsafe.Pointer(&cpos))
 		angle := *(*float64)(unsafe.Pointer(&cangle))
 		radius := *(*float64)(unsafe.Pointer(&cradius))
 		outlineColor := *(*SpaceDebugColor)(unsafe.Pointer(&coutlineColor))
 		fillColor := *(*SpaceDebugColor)(unsafe.Pointer(&cfillColor))
-		options.DrawCircle(pos, angle, radius, outlineColor, fillColor, options.Data)
+		options.DrawCircle(goVect(cpos), angle, radius, outlineColor, fillColor, options.Data)
 	}
 }
 
@@ -670,10 +656,8 @@ func go_chipmunk_space_debug_draw_circle_impl(cpos C.cpVect, cangle, cradius C.c
 func go_chipmunk_space_debug_draw_segment_impl(ca, cb C.cpVect, ccolor C.cpSpaceDebugColor, data unsafe.Pointer) {
 	options := (*SpaceDebugDrawOptions)(data)
 	if options.DrawSegment != nil {
-		a := *(*Vect)(unsafe.Pointer(&ca))
-		b := *(*Vect)(unsafe.Pointer(&cb))
 		color := *(*SpaceDebugColor)(unsafe.Pointer(&ccolor))
-		options.DrawSegment(a, b, color, options.Data)
+		options.DrawSegment(goVect(ca), goVect(cb), color, options.Data)
 	}
 }
 
@@ -681,12 +665,10 @@ func go_chipmunk_space_debug_draw_segment_impl(ca, cb C.cpVect, ccolor C.cpSpace
 func go_chipmunk_space_debug_draw_fat_segment_impl(ca, cb C.cpVect, cradius C.cpFloat, coutlineColor, cfillColor C.cpSpaceDebugColor, data unsafe.Pointer) {
 	options := (*SpaceDebugDrawOptions)(data)
 	if options.DrawFatSegment != nil {
-		a := *(*Vect)(unsafe.Pointer(&ca))
-		b := *(*Vect)(unsafe.Pointer(&cb))
 		radius := *(*float64)(unsafe.Pointer(&cradius))
 		outlineColor := *(*SpaceDebugColor)(unsafe.Pointer(&coutlineColor))
 		fillColor := *(*SpaceDebugColor)(unsafe.Pointer(&cfillColor))
-		options.DrawFatSegment(a, b, radius, outlineColor, fillColor, options.Data)
+		options.DrawFatSegment(goVect(ca), goVect(cb), radius, outlineColor, fillColor, options.Data)
 	}
 }
 
@@ -713,9 +695,8 @@ func go_chipmunk_space_debug_draw_dot_impl(csize C.cpFloat, cpos C.cpVect, ccolo
 	options := (*SpaceDebugDrawOptions)(data)
 	if options.DrawDot != nil {
 		size := *(*float64)(unsafe.Pointer(&csize))
-		pos := *(*Vect)(unsafe.Pointer(&cpos))
 		color := *(*SpaceDebugColor)(unsafe.Pointer(&ccolor))
-		options.DrawDot(size, pos, color, options.Data)
+		options.DrawDot(size, goVect(cpos), color, options.Data)
 	}
 }
 

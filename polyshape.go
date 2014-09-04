@@ -70,8 +70,7 @@ func (s *Shape) PolyCount() int {
 
 // Get the ith vertex of a polygon shape.
 func (s *Shape) PolyVert(index int) Vect {
-	ret := C.cpPolyShapeGetVert(s.c, C.int(index))
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpPolyShapeGetVert(s.c, C.int(index)))
 }
 
 // Get the radius of a polygon shape.

@@ -25,8 +25,8 @@ func PinJointNew(a, b *Body, anchorA, anchorB Vect) *Constraint {
 	c.c = C.cpPinJointNew(
 		a.c,
 		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
-		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
+		anchorA.c(),
+		anchorB.c(),
 	)
 	if c.c == nil {
 		return nil
@@ -38,30 +38,22 @@ func PinJointNew(a, b *Body, anchorA, anchorB Vect) *Constraint {
 
 // Get the location of the first anchor relative to the first body.
 func (c *Constraint) PinJointAnchorA() Vect {
-	ret := C.cpPinJointGetAnchorA(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpPinJointGetAnchorA(c.c))
 }
 
 // Set the location of the first anchor relative to the first body.
 func (c *Constraint) PinJointSetAnchorA(anchorA Vect) {
-	C.cpPinJointSetAnchorA(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
-	)
+	C.cpPinJointSetAnchorA(c.c, anchorA.c())
 }
 
 // Get the location of the second anchor relative to the second body.
 func (c *Constraint) PinJointAnchorB() Vect {
-	ret := C.cpPinJointGetAnchorB(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpPinJointGetAnchorB(c.c))
 }
 
 // Set the location of the second anchor relative to the second body.
 func (c *Constraint) PinJointSetAnchorB(anchorB Vect) {
-	C.cpPinJointSetAnchorB(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
-	)
+	C.cpPinJointSetAnchorB(c.c, anchorB.c())
 }
 
 // Get the distance the joint will maintain between the two anchors.

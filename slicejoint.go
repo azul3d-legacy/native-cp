@@ -25,8 +25,8 @@ func SlideJointNew(a, b *Body, anchorA, anchorB Vect, min, max float64) *Constra
 	c.c = C.cpSlideJointNew(
 		a.c,
 		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
-		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
+		anchorA.c(),
+		anchorB.c(),
 		C.cpFloat(min),
 		C.cpFloat(max),
 	)
@@ -40,30 +40,22 @@ func SlideJointNew(a, b *Body, anchorA, anchorB Vect, min, max float64) *Constra
 
 // Get the location of the first anchor relative to the first body.
 func (c *Constraint) SlideJointAnchorA() Vect {
-	ret := C.cpSlideJointGetAnchorA(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpSlideJointGetAnchorA(c.c))
 }
 
 // Set the location of the first anchor relative to the first body.
 func (c *Constraint) SlideJointSetAnchorA(anchorA Vect) {
-	C.cpSlideJointSetAnchorA(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
-	)
+	C.cpSlideJointSetAnchorA(c.c, anchorA.c())
 }
 
 // Get the location of the second anchor relative to the second body.
 func (c *Constraint) SlideJointAnchorB() Vect {
-	ret := C.cpSlideJointGetAnchorB(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpSlideJointGetAnchorB(c.c))
 }
 
 // Set the location of the second anchor relative to the second body.
 func (c *Constraint) SlideJointSetAnchorB(anchorB Vect) {
-	C.cpSlideJointSetAnchorB(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
-	)
+	C.cpSlideJointSetAnchorB(c.c, anchorB.c())
 }
 
 // Get the minimum distance the joint will maintain between the two anchors.

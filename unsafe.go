@@ -32,7 +32,7 @@ func (shape *Shape) CircleShapeSetRadius(radius float64) {
 func (shape *Shape) CircleShapeSetOffset(offset Vect) {
 	C.cpCircleShapeSetOffset(
 		(*C.cpShape)(unsafe.Pointer(shape)),
-		*(*C.cpVect)(unsafe.Pointer(&offset)),
+		offset.c(),
 	)
 }
 
@@ -44,8 +44,8 @@ func (shape *Shape) CircleShapeSetOffset(offset Vect) {
 func (shape *Shape) SegmentShapeSetEndpoints(a, b Vect) {
 	C.cpSegmentShapeSetEndpoints(
 		(*C.cpShape)(unsafe.Pointer(shape)),
-		*(*C.cpVect)(unsafe.Pointer(&a)),
-		*(*C.cpVect)(unsafe.Pointer(&b)),
+		a.c(),
+		b.c(),
 	)
 }
 

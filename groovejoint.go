@@ -22,13 +22,7 @@ func (c *Constraint) IsGrooveJoint() bool {
 // Allocate and initialize a groove joint.
 func GrooveJointNew(a, b *Body, grooveA, grooveB, anchorB Vect) *Constraint {
 	c := new(Constraint)
-	c.c = C.cpGrooveJointNew(
-		a.c,
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&grooveA)),
-		*(*C.cpVect)(unsafe.Pointer(&grooveB)),
-		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
-	)
+	c.c = C.cpGrooveJointNew(a.c, b.c, grooveA.c(), grooveB.c(), anchorB.c())
 	if c.c == nil {
 		return nil
 	}
@@ -39,42 +33,30 @@ func GrooveJointNew(a, b *Body, grooveA, grooveB, anchorB Vect) *Constraint {
 
 // Get the first endpoint of the groove relative to the first body.
 func (c *Constraint) GrooveJointGrooveA() Vect {
-	ret := C.cpGrooveJointGetGrooveA(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpGrooveJointGetGrooveA(c.c))
 }
 
 // Set the first endpoint of the groove relative to the first body.
 func (c *Constraint) GrooveJointSetGrooveA(grooveA Vect) {
-	C.cpGrooveJointSetGrooveA(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&grooveA)),
-	)
+	C.cpGrooveJointSetGrooveA(c.c, grooveA.c())
 }
 
 // Get the first endpoint of the groove relative to the first body.
 func (c *Constraint) GrooveJointGrooveB() Vect {
-	ret := C.cpGrooveJointGetGrooveB(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpGrooveJointGetGrooveB(c.c))
 }
 
 // Set the first endpoint of the groove relative to the first body.
 func (c *Constraint) GrooveJointSetGrooveB(grooveB Vect) {
-	C.cpGrooveJointSetGrooveB(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&grooveB)),
-	)
+	C.cpGrooveJointSetGrooveB(c.c, grooveB.c())
 }
 
 // Get the location of the second anchor relative to the second body.
 func (c *Constraint) GrooveJointAnchorB() Vect {
-	ret := C.cpGrooveJointGetAnchorB(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpGrooveJointGetAnchorB(c.c))
 }
 
 // Set the location of the second anchor relative to the second body.
 func (c *Constraint) GrooveJointSetAnchorB(grooveB Vect) {
-	C.cpGrooveJointSetAnchorB(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&grooveB)),
-	)
+	C.cpGrooveJointSetAnchorB(c.c, grooveB.c())
 }

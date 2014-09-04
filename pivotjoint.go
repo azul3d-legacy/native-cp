@@ -22,11 +22,7 @@ func (c *Constraint) IsPivotJoint() bool {
 // Allocate and initialize a pivot joint.
 func PivotJointNew(a, b *Body, pivot Vect) *Constraint {
 	c := new(Constraint)
-	c.c = C.cpPivotJointNew(
-		a.c,
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&pivot)),
-	)
+	c.c = C.cpPivotJointNew(a.c, b.c, pivot.c())
 	if c.c == nil {
 		return nil
 	}
@@ -38,12 +34,7 @@ func PivotJointNew(a, b *Body, pivot Vect) *Constraint {
 // Allocate and initialize a pivot joint with specific anchors.
 func PivotJointNew2(a, b *Body, anchorA, anchorB Vect) *Constraint {
 	c := new(Constraint)
-	c.c = C.cpPivotJointNew2(
-		a.c,
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
-		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
-	)
+	c.c = C.cpPivotJointNew2(a.c, b.c, anchorA.c(), anchorB.c())
 	if c.c == nil {
 		return nil
 	}
@@ -54,28 +45,20 @@ func PivotJointNew2(a, b *Body, anchorA, anchorB Vect) *Constraint {
 
 // Get the location of the first anchor relative to the first body.
 func (c *Constraint) PivotJointAnchorA() Vect {
-	ret := C.cpPivotJointGetAnchorA(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpPivotJointGetAnchorA(c.c))
 }
 
 // Set the location of the first anchor relative to the first body.
 func (c *Constraint) PivotJointSetAnchorA(anchorA Vect) {
-	C.cpPivotJointSetAnchorA(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
-	)
+	C.cpPivotJointSetAnchorA(c.c, anchorA.c())
 }
 
 // Get the location of the second anchor relative to the second body.
 func (c *Constraint) PivotJointAnchorB() Vect {
-	ret := C.cpPivotJointGetAnchorB(c.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpPivotJointGetAnchorB(c.c))
 }
 
 // Set the location of the second anchor relative to the second body.
 func (c *Constraint) PivotJointSetAnchorB(anchorB Vect) {
-	C.cpPivotJointSetAnchorB(
-		c.c,
-		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
-	)
+	C.cpPivotJointSetAnchorB(c.c, anchorB.c())
 }

@@ -54,30 +54,19 @@ func goBody(c *C.cpBody) *Body {
 //export go_chipmunk_body_velocity_func
 func go_chipmunk_body_velocity_func(cbody unsafe.Pointer, gravity C.cpVect, damping C.cpFloat, dt C.cpFloat) {
 	b := goBody((*C.cpBody)(unsafe.Pointer(cbody)))
-	b.bodyVelocityFunc(
-		b,
-		*(*Vect)(unsafe.Pointer(&gravity)),
-		float64(damping),
-		float64(dt),
-	)
+	b.bodyVelocityFunc(b, goVect(gravity), float64(damping), float64(dt))
 }
 
 //export go_chipmunk_body_position_func
 func go_chipmunk_body_position_func(cbody unsafe.Pointer, dt C.cpFloat) {
 	b := goBody((*C.cpBody)(unsafe.Pointer(cbody)))
-	b.bodyPositionFunc(
-		b,
-		float64(dt),
-	)
+	b.bodyPositionFunc(b, float64(dt))
 }
 
 // Allocate and initialize a Body.
 func BodyNew(mass, moment float64) *Body {
 	b := new(Body)
-	b.c = C.cpBodyNew(
-		C.cpFloat(mass),
-		C.cpFloat(moment),
-	)
+	b.c = C.cpBodyNew(C.cpFloat(mass), C.cpFloat(moment))
 	if b.c == nil {
 		return nil
 	}
@@ -198,58 +187,42 @@ func (b *Body) SetMoment(i float64) {
 
 // Get the position of a body.
 func (b *Body) Position() Vect {
-	ret := C.cpBodyGetPosition(b.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpBodyGetPosition(b.c))
 }
 
 // Set the position of the body.
 func (b *Body) SetPosition(pos Vect) {
-	C.cpBodySetPosition(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&pos)),
-	)
+	C.cpBodySetPosition(b.c, pos.c())
 }
 
 // Get the offset of the center of gravity in body local coordinates.
 func (b *Body) CenterOfGravity() Vect {
-	ret := C.cpBodyGetCenterOfGravity(b.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpBodyGetCenterOfGravity(b.c))
 }
 
 // Set the offset of the center of gravity in body local coordinates.
 func (b *Body) SetCenterOfGravity(cog Vect) {
-	C.cpBodySetCenterOfGravity(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&cog)),
-	)
+	C.cpBodySetCenterOfGravity(b.c, cog.c())
 }
 
 // Get the velocity of the body.
 func (b *Body) Velocity() Vect {
-	ret := C.cpBodyGetVelocity(b.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpBodyGetVelocity(b.c))
 }
 
 // Set the velocity of the body.
 func (b *Body) SetVelocity(velocity Vect) {
-	C.cpBodySetVelocity(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&velocity)),
-	)
+	C.cpBodySetVelocity(b.c, velocity.c())
 }
 
 // Get the force applied to the body for the next time step.
 func (b *Body) Force() Vect {
-	ret := C.cpBodyGetForce(b.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpBodyGetForce(b.c))
 }
 
 // Set the force applied to the body for the next time step.
 func (b *Body) SetForce(force Vect) {
-	C.cpBodySetForce(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&force)),
-	)
+	C.cpBodySetForce(b.c, force.c())
 }
 
 // Get the angle of the body.
@@ -295,8 +268,7 @@ func (b *Body) SetTorque(torque float64) {
 
 // Get the rotation vector of the body. (The x basis vector of it's transform.)
 func (b *Body) Rotation() Vect {
-	ret := C.cpBodyGetRotation(b.c)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpBodyGetRotation(b.c))
 }
 
 // Get the user data interface assigned to the body.
@@ -337,92 +309,52 @@ func (b *Body) SetPositionUpdateFunc(f BodyPositionFunc) {
 
 // Default velocity integration function..
 func BodyUpdateVelocity(b *Body, gravity Vect, damping, dt float64) {
-	C.cpBodyUpdateVelocity(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&gravity)),
-		C.cpFloat(damping),
-		C.cpFloat(dt),
-	)
+	C.cpBodyUpdateVelocity(b.c, gravity.c(), C.cpFloat(damping), C.cpFloat(dt))
 }
 
 // Default position integration function.
 func BodyUpdatePosition(b *Body, dt float64) {
-	C.cpBodyUpdatePosition(
-		b.c,
-		C.cpFloat(dt),
-	)
+	C.cpBodyUpdatePosition(b.c, C.cpFloat(dt))
 }
 
 // Convert body relative/local coordinates to absolute/world coordinates.
 func (b *Body) LocalToWorld(point Vect) Vect {
-	ret := C.cpBodyLocalToWorld(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&point)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpBodyLocalToWorld(b.c, point.c()))
 }
 
 // Convert body absolute/world coordinates to  relative/local coordinates.
 func (b *Body) WorldToLocal(point Vect) Vect {
-	ret := C.cpBodyWorldToLocal(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&point)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpBodyWorldToLocal(b.c, point.c()))
 }
 
 // Apply a force to a body. Both the force and point are expressed in world coordinates.
 func (b *Body) ApplyForceAtWorldPoint(force, point Vect) {
-	C.cpBodyApplyForceAtWorldPoint(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&force)),
-		*(*C.cpVect)(unsafe.Pointer(&point)),
-	)
+	C.cpBodyApplyForceAtWorldPoint(b.c, force.c(), point.c())
 }
 
 // Apply a force to a body. Both the force and point are expressed in body local coordinates.
 func (b *Body) ApplyForceAtLocalPoint(force, point Vect) {
-	C.cpBodyApplyForceAtLocalPoint(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&force)),
-		*(*C.cpVect)(unsafe.Pointer(&point)),
-	)
+	C.cpBodyApplyForceAtLocalPoint(b.c, force.c(), point.c())
 }
 
 // Apply an impulse to a body. Both the impulse and point are expressed in world coordinates.
 func (b *Body) ApplyImpulseAtWorldPoint(impulse, point Vect) {
-	C.cpBodyApplyImpulseAtWorldPoint(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&impulse)),
-		*(*C.cpVect)(unsafe.Pointer(&point)),
-	)
+	C.cpBodyApplyImpulseAtWorldPoint(b.c, impulse.c(), point.c())
 }
 
 // Apply an impulse to a body. Both the impulse and point are expressed in body local coordinates.
 func (b *Body) ApplyImpulseAtLocalPoint(impulse, point Vect) {
-	C.cpBodyApplyImpulseAtLocalPoint(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&impulse)),
-		*(*C.cpVect)(unsafe.Pointer(&point)),
-	)
+	C.cpBodyApplyImpulseAtLocalPoint(b.c, impulse.c(), point.c())
 }
 
 // Get the velocity on a body (in world units) at a point on the body in world coordinates.
 func (b *Body) VelocityAtWorldPoint(point Vect) Vect {
-	ret := C.cpBodyGetVelocityAtWorldPoint(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&point)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpBodyGetVelocityAtWorldPoint(b.c, point.c()))
 }
 
 // Get the velocity on a body (in world units) at a point on the body in local coordinates.
 func (b *Body) VelocityAtLocalPoint(point Vect) Vect {
-	ret := C.cpBodyGetVelocityAtLocalPoint(
-		b.c,
-		*(*C.cpVect)(unsafe.Pointer(&point)),
-	)
-	return *(*Vect)(unsafe.Pointer(&ret))
+	return goVect(C.cpBodyGetVelocityAtLocalPoint(b.c, point.c()))
 }
 
 // Get the amount of kinetic energy contained by the body.
