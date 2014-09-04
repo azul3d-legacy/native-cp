@@ -24,8 +24,8 @@ func (c *Constraint) IsDampedRotarySpring() bool {
 func DampedRotarySpringNew(a, b *Body, restAngle, stiffness, damping float64) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpDampedRotarySpringNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		C.cpFloat(restAngle),
 		C.cpFloat(stiffness),
 		C.cpFloat(damping),

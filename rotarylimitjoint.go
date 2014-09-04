@@ -23,8 +23,8 @@ func (c *Constraint) IsRotaryLimitJoint() bool {
 func RotaryLimitJointNew(a, b *Body, min, max float64) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpRotaryLimitJointNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		C.cpFloat(min),
 		C.cpFloat(max),
 	)

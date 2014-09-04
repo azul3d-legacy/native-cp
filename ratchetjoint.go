@@ -23,8 +23,8 @@ func (c *Constraint) IsRatchetJoint() bool {
 func RatchetJointNew(a, b *Body, phase, ratchet float64) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpRatchetJointNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		C.cpFloat(phase),
 		C.cpFloat(ratchet),
 	)

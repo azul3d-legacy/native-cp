@@ -23,8 +23,8 @@ func (c *Constraint) IsPivotJoint() bool {
 func PivotJointNew(a, b *Body, pivot Vect) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpPivotJointNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		*(*C.cpVect)(unsafe.Pointer(&pivot)),
 	)
 	if c.c == nil {
@@ -39,8 +39,8 @@ func PivotJointNew(a, b *Body, pivot Vect) *Constraint {
 func PivotJointNew2(a, b *Body, anchorA, anchorB Vect) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpPivotJointNew2(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
 		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
 	)

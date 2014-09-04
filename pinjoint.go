@@ -23,8 +23,8 @@ func (c *Constraint) IsPinJoint() bool {
 func PinJointNew(a, b *Body, anchorA, anchorB Vect) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpPinJointNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
 		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
 	)

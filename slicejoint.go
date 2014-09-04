@@ -23,8 +23,8 @@ func (c *Constraint) IsSlideJoint() bool {
 func SlideJointNew(a, b *Body, anchorA, anchorB Vect, min, max float64) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpSlideJointNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
 		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
 		C.cpFloat(min),

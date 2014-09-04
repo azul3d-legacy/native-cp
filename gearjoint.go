@@ -23,8 +23,8 @@ func (c *Constraint) IsGearJoint() bool {
 func GearJointNew(a, b *Body, phase, ratio float64) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpGearJointNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		C.cpFloat(phase),
 		C.cpFloat(ratio),
 	)

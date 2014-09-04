@@ -24,8 +24,8 @@ func (c *Constraint) IsDampedSpring() bool {
 func DampedSpringNew(a, b *Body, anchorA, anchorB Vect, restLength, stiffness, damping float64) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpDampedSpringNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		*(*C.cpVect)(unsafe.Pointer(&anchorA)),
 		*(*C.cpVect)(unsafe.Pointer(&anchorB)),
 		C.cpFloat(restLength),

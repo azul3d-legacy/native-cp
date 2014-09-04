@@ -23,8 +23,8 @@ func (c *Constraint) IsGrooveJoint() bool {
 func GrooveJointNew(a, b *Body, grooveA, grooveB, anchorB Vect) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpGrooveJointNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		*(*C.cpVect)(unsafe.Pointer(&grooveA)),
 		*(*C.cpVect)(unsafe.Pointer(&grooveB)),
 		*(*C.cpVect)(unsafe.Pointer(&anchorB)),

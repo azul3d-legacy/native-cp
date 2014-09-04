@@ -23,8 +23,8 @@ func (c *Constraint) IsSimpleMotor() bool {
 func SimpleMotorNew(a, b *Body, rate float64) *Constraint {
 	c := new(Constraint)
 	c.c = C.cpSimpleMotorNew(
-		(*C.cpBody)(unsafe.Pointer(a)),
-		(*C.cpBody)(unsafe.Pointer(b)),
+		a.c,
+		b.c,
 		C.cpFloat(rate),
 	)
 	if c.c == nil {
