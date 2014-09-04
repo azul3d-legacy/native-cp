@@ -191,7 +191,7 @@ func (b *Body) Moment() float64 {
 // Set the moment of inertia of the body.
 func (b *Body) SetMoment(i float64) {
 	C.cpBodySetMoment(
-		(*C.cpBody)(unsafe.Pointer(b)),
+		b.c,
 		C.cpFloat(i),
 	)
 }
