@@ -18,8 +18,8 @@ import (
 
 type Constraint struct {
 	c                            *C.cpConstraint
-	aBodyRef, bBodyRef *Body
-	spaceRef *Space
+	aBodyRef, bBodyRef           *Body
+	spaceRef                     *Space
 	userData                     interface{}
 	preSolveFunc, postSolveFunc  func(*Constraint, *Space)
 	dampedRotarySpringTorqueFunc func(spring *Constraint, relativeAngle float64) float64

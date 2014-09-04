@@ -173,6 +173,7 @@ func (s *Shape) Body() *Body {
 //
 // Can only be used if the shape is not currently added to a space.
 func (s *Shape) SetBody(b *Body) {
+	s.bodyRef = b
 	C.cpShapeSetBody(s.c, b.c)
 }
 

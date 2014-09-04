@@ -44,7 +44,7 @@ type Body struct {
 	userData         interface{}
 	bodyVelocityFunc BodyVelocityFunc
 	bodyPositionFunc BodyPositionFunc
-	spaceRef *Space
+	spaceRef         *Space
 }
 
 func goBody(c *C.cpBody, optional *Space) *Body {
@@ -401,7 +401,7 @@ func (b *Body) EachConstraint(f func(b *Body, c *Constraint)) {
 		b.c,
 		(*[0]byte)(C.pre_go_chipmunk_body_each_constraint),
 		unsafe.Pointer(&bodyEachConstraintData{
-			cb: f,
+			cb:    f,
 			Space: b.Space(),
 		}),
 	)

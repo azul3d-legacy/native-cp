@@ -24,7 +24,7 @@ func GrooveJointNew(a, b *Body, grooveA, grooveB, anchorB Vect) *Constraint {
 	c := &Constraint{
 		aBodyRef: a,
 		bBodyRef: b,
-		c: C.cpGrooveJointNew(a.c, b.c, grooveA.c(), grooveB.c(), anchorB.c()),
+		c:        C.cpGrooveJointNew(a.c, b.c, grooveA.c(), grooveB.c(), anchorB.c()),
 	}
 	if c.c == nil {
 		return nil

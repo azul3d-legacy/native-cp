@@ -215,12 +215,12 @@ func (s *Space) SetUserData(i interface{}) {
 //
 // This is merely provided for convenience and you are not required to use it.
 func (s *Space) StaticBody() *Body {
-	b := new(Body)
-	b.c = C.cpSpaceGetStaticBody(s.c)
+	c := C.cpSpaceGetStaticBody(s.c)
 	if b.c == nil {
 		return nil
 	}
-	C.cpBodySetUserData(b.c, C.cpDataPointer(unsafe.Pointer(b)))
+	b := goBody(c, s)
+	C.cpBodySetUserData(c, C.cpDataPointer(unsafe.Pointer(b)))
 	return b
 }
 
@@ -552,7 +552,7 @@ func (s *Space) EachBody(space *Space, f func(b *Body)) {
 		s.c,
 		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_body_iterator_func)),
 		unsafe.Pointer(&spaceBodyIterData{
-			cb: f,
+			cb:    f,
 			Space: s,
 		}),
 	)
@@ -592,7 +592,7 @@ func (s *Space) EachConstraint(space *Space, f func(c *Constraint)) {
 		s.c,
 		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_constraint_iterator_func)),
 		unsafe.Pointer(&spaceConstraintIterData{
-			cb: f,
+			cb:    f,
 			Space: space,
 		}),
 	)
