@@ -87,7 +87,7 @@ func (c *Constraint) DampedRotarySpringTorqueFunc() func(spring *Constraint, rel
 
 //export go_chipmunk_rotary_spring_torque_func
 func go_chipmunk_rotary_spring_torque_func(cspring unsafe.Pointer, crelativeAngle C.cpFloat) float64 {
-	spring := goConstraint((*C.cpConstraint)(cspring))
+	spring := goConstraint((*C.cpConstraint)(cspring), nil)
 	relativeAngle := *(*float64)(unsafe.Pointer(&crelativeAngle))
 	return spring.dampedRotarySpringTorqueFunc(spring, relativeAngle)
 }

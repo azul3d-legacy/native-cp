@@ -19,15 +19,18 @@ import (
 type Constraint struct {
 	c                            *C.cpConstraint
 	aBodyRef, bBodyRef *Body
+	space *Space
 	userData                     interface{}
 	preSolveFunc, postSolveFunc  func(*Constraint, *Space)
 	dampedRotarySpringTorqueFunc func(spring *Constraint, relativeAngle float64) float64
 	dampedSpringForceFunc        func(spring *Constraint, dist float64) float64
 }
 
-func goConstraint(c *C.cpConstraint) *Constraint {
+func goConstraint(c *C.cpConstraint, optional *Space) *Constraint {
 	data := C.cpConstraintGetUserData(c)
-	return (*Constraint)(data)
+	g := (*Constraint)(data)
+	g.space = optional
+	return g
 }
 
 func finalizeConstraint(c *Constraint) {
@@ -128,15 +131,15 @@ type (
 
 //export go_chipmunk_constraint_pre_solve_func
 func go_chipmunk_constraint_pre_solve_func(cconstraint, cspace unsafe.Pointer) {
-	constraint := goConstraint((*C.cpConstraint)(cconstraint))
 	space := goSpace((*C.cpSpace)(cspace))
+	constraint := goConstraint((*C.cpConstraint)(cconstraint), space)
 	constraint.PreSolveFunc()(constraint, space)
 }
 
 //export go_chipmunk_constraint_post_solve_func
 func go_chipmunk_constraint_post_solve_func(cconstraint, cspace unsafe.Pointer) {
-	constraint := goConstraint((*C.cpConstraint)(cconstraint))
 	space := goSpace((*C.cpSpace)(cspace))
+	constraint := goConstraint((*C.cpConstraint)(cconstraint), space)
 	constraint.PostSolveFunc()(constraint, space)
 }
 

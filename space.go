@@ -249,7 +249,7 @@ func (s *Space) AddBody(body *Body) *Body {
 
 // Add a constraint to the simulation.
 func (s *Space) AddConstraint(constraint *Constraint) *Constraint {
-	return goConstraint(C.cpSpaceAddConstraint(s.c, constraint.c))
+	return goConstraint(C.cpSpaceAddConstraint(s.c, constraint.c), s)
 }
 
 // Remove a collision shape from the simulation.
@@ -574,11 +574,16 @@ func (s *Space) EachShape(space *Space, f func(s *Shape)) {
 	)
 }
 
+type spaceConstraintIterData struct {
+	cb func(c *Constraint)
+	*Space
+}
+
 //export go_chipmunk_space_constraint_iterator_func
-func go_chipmunk_space_constraint_iterator_func(cconstraint, data unsafe.Pointer) {
-	constraint := goConstraint((*C.cpConstraint)(cconstraint))
-	f := *(*func(*Constraint))(data)
-	f(constraint)
+func go_chipmunk_space_constraint_iterator_func(cconstraint, cdata unsafe.Pointer) {
+	data := (*spaceConstraintIterData)(cdata)
+	constraint := goConstraint((*C.cpConstraint)(cconstraint), data.Space)
+	data.cb(constraint)
 }
 
 // Call f for each shape in the space.
@@ -586,7 +591,10 @@ func (s *Space) EachConstraint(space *Space, f func(c *Constraint)) {
 	C.cpSpaceEachConstraint(
 		s.c,
 		(*[0]byte)(unsafe.Pointer(C.pre_go_chipmunk_space_constraint_iterator_func)),
-		unsafe.Pointer(&f),
+		unsafe.Pointer(&spaceConstraintIterData{
+			cb: f,
+			Space: space,
+		}),
 	)
 }
 

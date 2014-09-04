@@ -382,12 +382,17 @@ func (b *Body) EachShape(f func(b *Body, s *Shape)) {
 	)
 }
 
+type bodyEachConstraintData struct {
+	cb func(b *Body, c *Constraint)
+	*Space
+}
+
 //export go_chipmunk_body_each_constraint
-func go_chipmunk_body_each_constraint(cbody, cconstraint, data unsafe.Pointer) {
-	body := goBody((*C.cpBody)(cbody), nil)
-	constraint := goConstraint((*C.cpConstraint)(cconstraint))
-	f := *(*func(b *Body, c *Constraint))(data)
-	f(body, constraint)
+func go_chipmunk_body_each_constraint(cbody, cconstraint, cdata unsafe.Pointer) {
+	data := (*bodyEachConstraintData)(cdata)
+	body := goBody((*C.cpBody)(cbody), data.Space)
+	constraint := goConstraint((*C.cpConstraint)(cconstraint), data.Space)
+	data.cb(body, constraint)
 }
 
 // Returns a slice of all contraints attached to the body and added to the space.
@@ -395,7 +400,10 @@ func (b *Body) EachConstraint(f func(b *Body, c *Constraint)) {
 	C.cpBodyEachConstraint(
 		b.c,
 		(*[0]byte)(C.pre_go_chipmunk_body_each_constraint),
-		unsafe.Pointer(&f),
+		unsafe.Pointer(&bodyEachConstraintData{
+			cb: f,
+			Space: b.Space(),
+		}),
 	)
 }
 
