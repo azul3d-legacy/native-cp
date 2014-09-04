@@ -9,14 +9,16 @@ package cp
 */
 import "C"
 
-import (
-	"unsafe"
-)
-
 var (
 	// The zero vector.
 	Vzero = Vect{0, 0}
 )
+
+// Chipmunk's 2D vector type.
+type Vect struct {
+	X float64
+	Y float64
+}
 
 // c converts a Vect to a C.cpVect.
 func (v Vect) c() C.cpVect {
@@ -164,19 +166,43 @@ func Vnear(v1, v2 Vect, dist float64) bool {
 	return goBool(C.cpvnear(v1.c(), v2.c(), C.cpFloat(dist)))
 }
 
+// Row major [[a, b][c d]]
+type Mat2x2 struct {
+	A float64
+	B float64
+	C float64
+	D float64
+}
+
+// c converts a Mat2x2 to a C.cpMat2x2
+func (m Mat2x2) c() C.cpMat2x2 {
+	var cp C.cpMat2x2
+	cp.a = C.cpFloat(m.A)
+	cp.b = C.cpFloat(m.B)
+	cp.c = C.cpFloat(m.C)
+	cp.d = C.cpFloat(m.D)
+	return cp
+}
+
+// goMat2x2 converts C.cpMat2x2 to a Go Mat2x2.
+func goMat2x2(v C.cpMat2x2) Mat2x2 {
+	return Mat2x2{
+		A: float64(v.a),
+		B: float64(v.b),
+		C: float64(v.c),
+		D: float64(v.d),
+	}
+}
+
 func Mat2x2New(a, b, c, d float64) Mat2x2 {
-	ret := C.cpMat2x2New(
-		C.cpFloat(a),
-		C.cpFloat(b),
-		C.cpFloat(c),
-		C.cpFloat(d),
-	)
-	return *(*Mat2x2)(unsafe.Pointer(&ret))
+	return Mat2x2{
+		A: a,
+		B: b,
+		C: c,
+		D: d,
+	}
 }
 
 func (m Mat2x2) Transform(v Vect) Vect {
-	return goVect(C.cpMat2x2Transform(
-		*(*C.cpMat2x2)(unsafe.Pointer(&m)),
-		v.c(),
-	))
+	return goVect(C.cpMat2x2Transform(m.c(), v.c()))
 }

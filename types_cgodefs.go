@@ -32,14 +32,8 @@ type Bitmask C.cpBitmask
 // Type used for various timestamps in Chipmunk.
 type Timestamp C.cpTimestamp
 
-// Chipmunk's 2D vector type.
-type Vect C.cpVect
-
 // Column major affine transform.
 type Transform C.cpTransform
-
-// Row major [[a, b][c d]]
-type Mat2x2 C.cpMat2x2
 
 // Chipmunk's axis-aligned 2D bounding box type. (left, bottom, right, top)
 type BB C.cpBB

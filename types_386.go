@@ -19,11 +19,6 @@ type Bitmask uint32
 
 type Timestamp uint32
 
-type Vect struct {
-	X float64
-	Y float64
-}
-
 type Transform struct {
 	A  float64
 	B  float64
@@ -31,13 +26,6 @@ type Transform struct {
 	D  float64
 	Tx float64
 	Ty float64
-}
-
-type Mat2x2 struct {
-	A float64
-	B float64
-	C float64
-	D float64
 }
 
 type BB struct {
