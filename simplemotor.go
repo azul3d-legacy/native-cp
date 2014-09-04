@@ -21,12 +21,15 @@ func (c *Constraint) IsSimpleMotor() bool {
 
 // Allocate and initialize a simple motor.
 func SimpleMotorNew(a, b *Body, rate float64) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpSimpleMotorNew(
-		a.c,
-		b.c,
-		C.cpFloat(rate),
-	)
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpSimpleMotorNew(
+			a.c,
+			b.c,
+			C.cpFloat(rate),
+		),
+	}
 	if c.c == nil {
 		return nil
 	}

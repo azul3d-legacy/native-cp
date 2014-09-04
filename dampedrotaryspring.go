@@ -22,14 +22,17 @@ func (c *Constraint) IsDampedRotarySpring() bool {
 
 // Allocate and initialize a damped rotary spring.
 func DampedRotarySpringNew(a, b *Body, restAngle, stiffness, damping float64) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpDampedRotarySpringNew(
-		a.c,
-		b.c,
-		C.cpFloat(restAngle),
-		C.cpFloat(stiffness),
-		C.cpFloat(damping),
-	)
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpDampedRotarySpringNew(
+			a.c,
+			b.c,
+			C.cpFloat(restAngle),
+			C.cpFloat(stiffness),
+			C.cpFloat(damping),
+		),
+	}
 	if c.c == nil {
 		return nil
 	}

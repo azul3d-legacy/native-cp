@@ -22,16 +22,19 @@ func (c *Constraint) IsDampedSpring() bool {
 
 // Allocate and initialize a damped spring.
 func DampedSpringNew(a, b *Body, anchorA, anchorB Vect, restLength, stiffness, damping float64) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpDampedSpringNew(
-		a.c,
-		b.c,
-		anchorA.c(),
-		anchorB.c(),
-		C.cpFloat(restLength),
-		C.cpFloat(stiffness),
-		C.cpFloat(damping),
-	)
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpDampedSpringNew(
+			a.c,
+			b.c,
+			anchorA.c(),
+			anchorB.c(),
+			C.cpFloat(restLength),
+			C.cpFloat(stiffness),
+			C.cpFloat(damping),
+		),
+	}
 	if c.c == nil {
 		return nil
 	}

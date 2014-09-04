@@ -21,13 +21,16 @@ func (c *Constraint) IsPinJoint() bool {
 
 // Allocate and initialize a pin joint.
 func PinJointNew(a, b *Body, anchorA, anchorB Vect) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpPinJointNew(
-		a.c,
-		b.c,
-		anchorA.c(),
-		anchorB.c(),
-	)
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpPinJointNew(
+			a.c,
+			b.c,
+			anchorA.c(),
+			anchorB.c(),
+		),
+	}
 	if c.c == nil {
 		return nil
 	}

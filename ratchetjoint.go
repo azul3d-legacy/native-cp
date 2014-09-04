@@ -21,13 +21,16 @@ func (c *Constraint) IsRatchetJoint() bool {
 
 // Allocate and initialize a ratchet joint.
 func RatchetJointNew(a, b *Body, phase, ratchet float64) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpRatchetJointNew(
-		a.c,
-		b.c,
-		C.cpFloat(phase),
-		C.cpFloat(ratchet),
-	)
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpRatchetJointNew(
+			a.c,
+			b.c,
+			C.cpFloat(phase),
+			C.cpFloat(ratchet),
+		),
+	}
 	if c.c == nil {
 		return nil
 	}

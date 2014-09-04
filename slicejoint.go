@@ -21,15 +21,18 @@ func (c *Constraint) IsSlideJoint() bool {
 
 // Allocate and initialize a slide joint.
 func SlideJointNew(a, b *Body, anchorA, anchorB Vect, min, max float64) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpSlideJointNew(
-		a.c,
-		b.c,
-		anchorA.c(),
-		anchorB.c(),
-		C.cpFloat(min),
-		C.cpFloat(max),
-	)
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpSlideJointNew(
+			a.c,
+			b.c,
+			anchorA.c(),
+			anchorB.c(),
+			C.cpFloat(min),
+			C.cpFloat(max),
+		),
+	}
 	if c.c == nil {
 		return nil
 	}

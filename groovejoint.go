@@ -21,8 +21,11 @@ func (c *Constraint) IsGrooveJoint() bool {
 
 // Allocate and initialize a groove joint.
 func GrooveJointNew(a, b *Body, grooveA, grooveB, anchorB Vect) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpGrooveJointNew(a.c, b.c, grooveA.c(), grooveB.c(), anchorB.c())
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpGrooveJointNew(a.c, b.c, grooveA.c(), grooveB.c(), anchorB.c()),
+	}
 	if c.c == nil {
 		return nil
 	}

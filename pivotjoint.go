@@ -21,8 +21,11 @@ func (c *Constraint) IsPivotJoint() bool {
 
 // Allocate and initialize a pivot joint.
 func PivotJointNew(a, b *Body, pivot Vect) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpPivotJointNew(a.c, b.c, pivot.c())
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpPivotJointNew(a.c, b.c, pivot.c()),
+	}
 	if c.c == nil {
 		return nil
 	}
@@ -33,8 +36,11 @@ func PivotJointNew(a, b *Body, pivot Vect) *Constraint {
 
 // Allocate and initialize a pivot joint with specific anchors.
 func PivotJointNew2(a, b *Body, anchorA, anchorB Vect) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpPivotJointNew2(a.c, b.c, anchorA.c(), anchorB.c())
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpPivotJointNew2(a.c, b.c, anchorA.c(), anchorB.c()),
+	}
 	if c.c == nil {
 		return nil
 	}

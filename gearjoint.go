@@ -21,13 +21,16 @@ func (c *Constraint) IsGearJoint() bool {
 
 // Allocate and initialize a gear joint.
 func GearJointNew(a, b *Body, phase, ratio float64) *Constraint {
-	c := new(Constraint)
-	c.c = C.cpGearJointNew(
-		a.c,
-		b.c,
-		C.cpFloat(phase),
-		C.cpFloat(ratio),
-	)
+	c := &Constraint{
+		aBodyRef: a,
+		bBodyRef: b,
+		c: C.cpGearJointNew(
+			a.c,
+			b.c,
+			C.cpFloat(phase),
+			C.cpFloat(ratio),
+		),
+	}
 	if c.c == nil {
 		return nil
 	}
